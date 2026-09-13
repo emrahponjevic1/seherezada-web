@@ -46,6 +46,13 @@ export async function jedanKod(id: number) {
   return kod ?? null;
 }
 
+/** Id-ji vseh kod — za barvo kode, ki se dodeli po vrstnem redu nastanka. */
+export async function idjeviKodova() {
+  const sql = baza();
+  const redovi = await sql<{ id: number }[]>`select id from qr_kodovi order by id`;
+  return redovi.map((r) => r.id);
+}
+
 export async function brojke(kodId: number | null, raspon: Raspon) {
   const sql = baza();
   const [r] = await sql<
@@ -79,7 +86,8 @@ export interface Stupac {
  * manjkajočimi dnevi bi lagal o tem, kako enakomeren je promet.
  * Nad 120 dnevi se združi po tednih, sicer so stolpci tanjši od piksla.
  */
-export async function poDanima(kodId: number | null, raspon: Raspon) {
+/** Prvi in zadnji dan obdobja ter ali se šteje po dnevih ali po tednih. */
+async function okvirDana(kodId: number | null, raspon: Raspon) {
   const sql = baza();
   const kod = kodId === null ? sql`true` : sql`s.kod_id = ${kodId}`;
 
@@ -98,7 +106,54 @@ export async function poDanima(kodId: number | null, raspon: Raspon) {
   }
 
   const razmak = (Date.parse(danas) - Date.parse(pocetak)) / 86_400_000 + 1;
-  const jedinica = razmak > 120 ? "week" : "day";
+  return { danas, pocetak, jedinica: (razmak > 120 ? "week" : "day") as "day" | "week" };
+}
+
+/**
+ * Skeniranja po dnevih, ločeno po kodah — za naložen graf na /statistika.
+ * Vrne ključe dni in za vsako kodo niz števil v istem vrstnem redu.
+ */
+export async function poDanimaPoKodu(raspon: Raspon) {
+  const sql = baza();
+  const { danas, pocetak, jedinica } = await okvirDana(null, raspon);
+
+  const redovi = await sql<{ kljuc: string; kod_id: number | null; broj: number }[]>`
+    with dani as (
+      select generate_series(
+        date_trunc(${jedinica}, ${pocetak}::date)::date,
+        ${danas}::date,
+        ${jedinica === "week" ? "7 days" : "1 day"}::interval
+      )::date as dan
+    ),
+    brojevi as (
+      select date_trunc(${jedinica}, s.vrijeme at time zone ${TZ})::date as dan, s.kod_id, count(*)::int as broj
+      from qr_skeniranja s
+      where not s.bot
+        and s.vrijeme >= (${pocetak}::date::timestamp at time zone ${TZ})
+      group by 1, 2
+    )
+    select to_char(d.dan, 'YYYY-MM-DD') as kljuc, b.kod_id, coalesce(b.broj, 0)::int as broj
+    from dani d left join brojevi b on b.dan = d.dan
+    order by d.dan`;
+
+  const kljucevi: string[] = [];
+  for (const r of redovi) if (kljucevi[kljucevi.length - 1] !== r.kljuc) kljucevi.push(r.kljuc);
+
+  const poKodu = new Map<number, number[]>();
+  for (const r of redovi) {
+    if (r.kod_id === null) continue;
+    const niz = poKodu.get(r.kod_id) ?? new Array<number>(kljucevi.length).fill(0);
+    niz[kljucevi.indexOf(r.kljuc)] = r.broj;
+    poKodu.set(r.kod_id, niz);
+  }
+
+  return { kljucevi, jedinica, poKodu };
+}
+
+export async function poDanima(kodId: number | null, raspon: Raspon) {
+  const sql = baza();
+  const kod = kodId === null ? sql`true` : sql`s.kod_id = ${kodId}`;
+  const { danas, pocetak, jedinica } = await okvirDana(kodId, raspon);
 
   const redovi = await sql<Stupac[]>`
     with dani as (

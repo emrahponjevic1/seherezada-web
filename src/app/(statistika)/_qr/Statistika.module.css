@@ -507,11 +507,13 @@
   fill: #1c1917;
 }
 
+/* Stran kode nastavi --boja-koda na barvo kode (ista kot na seznamu). */
 .stupac {
-  fill: #ea580c;
+  fill: var(--boja-koda, #ea580c);
 }
 .stupacAktivan {
-  fill: #f97316;
+  fill: var(--boja-koda, #ea580c);
+  filter: brightness(1.12);
 }
 
 .tooltip {
@@ -600,7 +602,7 @@
 .raspodjelaPopuna {
   display: block;
   height: 100%;
-  background: #ea580c;
+  background: var(--boja-koda, #ea580c);
   border-radius: 0 4px 4px 0;
 }
 

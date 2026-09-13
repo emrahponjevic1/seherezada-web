@@ -10,23 +10,26 @@ import p from "./Stranice.module.css";
 // ---------------------------------------------------------------------------
 // SEZNAM KOD
 //
-// Na računalniku vrstice kot tabela, na telefonu kartice (glej
-// Stranice.module.css). Iskanje in razvrščanje tečeta v brskalniku; številke
-// in datumi pridejo že oblikovani s strežnika, da se ne razlikujejo.
+// Računalnik: vrstica kot tabela (slika, ime, številke, zadnje skeniranje).
+// Telefon: ena preprosta vrstica — barva, ime, drobno "ukupno · zadnje" in
+// veliko število desno. Vse ostalo je na strani kode.
+//
+// Barvna pika je ista kot barva kode v grafu nad seznamom.
 // ---------------------------------------------------------------------------
 
 export interface KodZaListu {
   id: number;
   naziv: string;
   cilj: string;
+  boja: string;
   mjeren: boolean;
   aktivan: boolean;
   qrPodaci: string;
   stil: QrStil;
   uRasponu: number;
   uRasponuTekst: string;
-  ukupnoTekst: string;
   ukupno: number;
+  ukupnoTekst: string;
   zadnje: string;
   zadnjeTacno: string;
   kreiran: number;
@@ -50,8 +53,6 @@ export default function ListaKodova({ kodovi, rasponNaziv }: { kodovi: KodZaList
     });
   }, [kodovi, upit, redoslijed]);
 
-  const oznakaRaspona = `Skeniranja (${rasponNaziv.toLowerCase()})`;
-
   return (
     <div className={p.lista}>
       {kodovi.length > 3 && (
@@ -59,7 +60,7 @@ export default function ListaKodova({ kodovi, rasponNaziv }: { kodovi: KodZaList
           <input
             type="search"
             className={s.unos}
-            placeholder="Traži po nazivu ili linku…"
+            placeholder="Traži kod…"
             value={upit}
             onChange={(e) => setUpit(e.target.value)}
             aria-label="Traži kodove"
@@ -80,7 +81,7 @@ export default function ListaKodova({ kodovi, rasponNaziv }: { kodovi: KodZaList
       <div className={p.kodZaglavlje} aria-hidden="true">
         <span />
         <span>Kod</span>
-        <span className={p.desno}>{oznakaRaspona}</span>
+        <span className={p.desno}>{rasponNaziv}</span>
         <span className={p.desno}>Ukupno</span>
         <span>Zadnje skeniranje</span>
         <span />
@@ -93,8 +94,12 @@ export default function ListaKodova({ kodovi, rasponNaziv }: { kodovi: KodZaList
               <span className={p.kodSlika}>
                 <QrSlicica podaci={k.qrPodaci} stil={k.stil} velicina={56} />
               </span>
+
               <span className={p.kodInfo}>
-                <span className={p.kodIme}>{k.naziv}</span>
+                <span className={p.kodIme}>
+                  <span className={p.kodBoja} style={{ background: k.boja }} aria-hidden="true" />
+                  <span className={p.kodImeTekst}>{k.naziv}</span>
+                </span>
                 <span className={p.kodCilj}>{k.cilj}</span>
                 <span className={p.cipovi}>
                   <span className={`${s.cip} ${k.mjeren ? s.cipMjeren : s.cipDirektan}`}>
@@ -102,14 +107,18 @@ export default function ListaKodova({ kodovi, rasponNaziv }: { kodovi: KodZaList
                   </span>
                   {!k.aktivan && <span className={`${s.cip} ${s.cipPauziran}`}>Pauziran</span>}
                 </span>
+                {/* Samo telefon: vse, kar je na računalniku v stolpcih, v eni drobni vrstici. */}
+                <span className={p.kodPodlinija}>
+                  {!k.aktivan && "Pauziran · "}
+                  {k.mjeren ? `ukupno ${k.ukupnoTekst} · ${k.zadnje}` : "direktan — ne mjeri se"}
+                </span>
               </span>
-              <span className={p.kodBroj} data-oznaka={oznakaRaspona}>
+
+              <span className={p.kodBroj} aria-label={`${rasponNaziv}: ${k.mjeren ? k.uRasponuTekst : "ne mjeri se"}`}>
                 {k.mjeren ? k.uRasponuTekst : "—"}
               </span>
-              <span className={p.kodUkupno} data-oznaka="Ukupno">
-                {k.mjeren ? k.ukupnoTekst : "—"}
-              </span>
-              <span className={p.kodZadnje} data-oznaka="Zadnje" title={k.zadnjeTacno}>
+              <span className={p.kodUkupno}>{k.mjeren ? k.ukupnoTekst : "—"}</span>
+              <span className={p.kodZadnje} title={k.zadnjeTacno}>
                 {k.mjeren ? k.zadnje : "ne mjeri se"}
               </span>
               <span className={p.kodStrelica} aria-hidden="true">

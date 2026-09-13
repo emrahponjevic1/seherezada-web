@@ -1,6 +1,8 @@
 import Link from "next/link";
 import s from "@/app/(statistika)/_qr/Statistika.module.css";
+import p from "@/app/(statistika)/_qr/Stranice.module.css";
 import { imaBazu } from "@/app/(statistika)/_qr/baza";
+import { BOJA_OSTALI, bojeKodova } from "@/app/(statistika)/_qr/boje";
 import NemaBaze from "@/app/(statistika)/_qr/NemaBaze";
 import Prijava from "@/app/(statistika)/_qr/Prijava";
 import { jePrijavljen } from "@/app/(statistika)/_qr/sesija";
@@ -11,9 +13,9 @@ import { broj, datumVrijeme, oznakaDana, relativno } from "@/app/(statistika)/_q
 import ListaKodova, { type KodZaListu } from "@/app/(statistika)/_qr/ListaKodova";
 import { procitajRaspon } from "@/app/(statistika)/_qr/raspon";
 import { pripraviQrTabele } from "@/app/(statistika)/_qr/shema";
+import SlojeviGrafikon, { type Serija } from "@/app/(statistika)/_qr/SlojeviGrafikon";
 import { ZADANI_STIL } from "@/app/(statistika)/_qr/stil";
-import StupciGrafikon from "@/app/(statistika)/_qr/StupciGrafikon";
-import { brojke, poDanima, sviKodovi } from "@/app/(statistika)/_qr/upiti";
+import { brojke, poDanimaPoKodu, sviKodovi } from "@/app/(statistika)/_qr/upiti";
 
 export const metadata = { title: "QR statistika" };
 
@@ -28,7 +30,7 @@ export default async function StatistikaPage({
 
   await pripraviQrTabele();
   const raspon = procitajRaspon(r);
-  const [kodovi, b, dani] = await Promise.all([sviKodovi(raspon), brojke(null, raspon), poDanima(null, raspon)]);
+  const [kodovi, b, dani] = await Promise.all([sviKodovi(raspon), brojke(null, raspon), poDanimaPoKodu(raspon)]);
 
   const aktivnih = kodovi.filter((k) => k.aktivan).length;
   const najbolji = kodovi.reduce<(typeof kodovi)[number] | null>(
@@ -37,12 +39,28 @@ export default async function StatistikaPage({
   );
   const period = raspon.dani === null ? "od početka" : raspon.dani === 1 ? "danas" : `zadnjih ${raspon.naziv}`;
 
+  // Barva sledi kodi (po nastanku), zato je ista v grafu in v seznamu.
+  const boje = bojeKodova(kodovi.map((k) => k.id));
+  const serije: Serija[] = [];
+  const ostali = new Array<number>(dani.kljucevi.length).fill(0);
+  for (const k of [...kodovi].sort((a, c) => a.id - c.id)) {
+    const vrijednosti = dani.poKodu.get(k.id);
+    if (!vrijednosti) continue;
+    const boja = boje.get(k.id)!;
+    if (boja.ostali) vrijednosti.forEach((v, i) => (ostali[i] += v));
+    else serije.push({ id: String(k.id), naziv: k.naziv, boja: boja.boja, vrijednosti });
+  }
+  if (ostali.some((v) => v > 0)) {
+    serije.push({ id: "ostali", naziv: "Ostali kodovi", boja: BOJA_OSTALI, vrijednosti: ostali });
+  }
+
   const zaListu: KodZaListu[] = kodovi.map((k) => {
     const mjeren = k.nacin === "mjeren";
     return {
       id: k.id,
       naziv: k.naziv,
       cilj: k.cilj,
+      boja: boje.get(k.id)!.boja,
       mjeren,
       aktivan: k.aktivan,
       qrPodaci: mjeren ? `${bazniUrl()}/q/${k.slug}` : k.cilj,
@@ -84,12 +102,12 @@ export default async function StatistikaPage({
             <span className={s.kpiVrijednost}>{broj(b.jedinstveni)}</span>
             <span className={s.kpiDodatak}>isti telefon jednom dnevno</span>
           </div>
-          <div className={s.kpi}>
+          <div className={`${s.kpi} ${p.kpiSporedni}`}>
             <span className={s.kpiOznaka}>Aktivni kodovi</span>
             <span className={s.kpiVrijednost}>{aktivnih}</span>
             <span className={s.kpiDodatak}>od ukupno {kodovi.length}</span>
           </div>
-          <div className={s.kpi}>
+          <div className={`${s.kpi} ${p.kpiSporedni}`}>
             <span className={s.kpiOznaka}>Najčešće skeniran</span>
             <span className={`${s.kpiVrijednost} ${s.kpiTekst}`} title={najbolji?.naziv}>
               {najbolji?.naziv ?? "—"}
@@ -109,9 +127,10 @@ export default async function StatistikaPage({
               <span className={s.pomoc}>Isključeno {broj(b.boti)} otvaranja od botova i pregleda linkova.</span>
             )}
           </div>
-          <StupciGrafikon
-            opis={`Skeniranja svih kodova ${period}`}
-            podaci={dani.stupci.map((d) => ({ ...oznakaDana(d.kljuc, dani.jedinica), broj: d.broj }))}
+          <SlojeviGrafikon
+            opis={`Skeniranja po kodovima ${period}`}
+            oznake={dani.kljucevi.map((kljuc) => oznakaDana(kljuc, dani.jedinica))}
+            serije={serije}
           />
         </section>
 

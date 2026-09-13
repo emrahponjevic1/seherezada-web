@@ -1,6 +1,10 @@
 /* ---------------------------------------------------------------------------
    Postavitve strani /statistika in /statistika/[id].
    Skupni gradniki (gumbi, kartice, številke) so v Statistika.module.css.
+
+   Telefon (do 720 px) je namenoma preprost: ena vrstica na kodo, ena vrstica
+   na skeniranje, samo bistvene številke. Podrobnosti so na računalniku ali za
+   gumbom "Više statistike".
    --------------------------------------------------------------------------- */
 
 /* ---- Seznam kod ---- */
@@ -27,7 +31,7 @@
 .kodZaglavlje,
 .kodRed {
   display: grid;
-  grid-template-columns: 64px minmax(0, 1fr) 130px 80px 150px 20px;
+  grid-template-columns: 64px minmax(0, 1fr) 110px 80px 150px 20px;
   align-items: center;
   column-gap: 1.25rem;
 }
@@ -76,6 +80,20 @@
 }
 
 .kodIme {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.kodBoja {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  flex: none;
+}
+
+.kodImeTekst {
   font-weight: 800;
   font-size: 1rem;
   overflow: hidden;
@@ -89,6 +107,10 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.kodPodlinija {
+  display: none;
 }
 
 .cipovi {
@@ -129,6 +151,49 @@
 }
 .kodRed:hover .kodStrelica {
   color: #ea580c;
+}
+
+/* ---- Legenda in oblaček naloženega grafa ---- */
+
+.legenda {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #57534e;
+}
+
+.legendaStavka {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.legendaBoja {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  flex: none;
+}
+
+.tipRed {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.78rem;
+}
+
+.tipKljuc {
+  width: 12px;
+  height: 3px;
+  border-radius: 2px;
+  flex: none;
+}
+
+.stupacIstaknut path {
+  filter: brightness(1.1);
 }
 
 /* ---- Glava kode ---- */
@@ -184,6 +249,10 @@
   overflow-wrap: anywhere;
 }
 
+.linkTekst {
+  min-width: 0;
+}
+
 .kodKarticaBrojke {
   display: flex;
   flex-direction: column;
@@ -213,6 +282,7 @@
   color: #57534e;
   cursor: pointer;
   white-space: nowrap;
+  flex: none;
 }
 .kopiraj:hover {
   border-color: #fed7aa;
@@ -258,14 +328,6 @@
   padding-bottom: 0.5rem;
 }
 
-.alatnaTraka {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem 1rem;
-  flex-wrap: wrap;
-}
-
 /* ---- Statistika ---- */
 
 .mrezaRaspodjela {
@@ -273,6 +335,24 @@
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 1rem;
 }
+
+.vise {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.viseSadrzaj {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.viseDugme {
+  display: none;
+}
+
+/* ---- Zadnja skeniranja: vsaka druga vrstica rahlo potemnjena ---- */
 
 .skeniranja {
   list-style: none;
@@ -283,34 +363,48 @@
 .skZaglavlje,
 .skeniranje {
   display: grid;
-  grid-template-columns: 150px minmax(0, 1.2fr) minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1fr) 80px;
+  grid-template-columns: 160px minmax(0, 1.2fr) minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1fr) 80px;
   gap: 1rem;
   align-items: center;
-  padding: 0.7rem 0.25rem;
 }
 
 .skZaglavlje {
+  padding: 0.6rem 0.75rem;
   font-size: 0.75rem;
   font-weight: 700;
   color: #78716c;
   border-bottom: 1px solid #f2ede4;
+  margin-bottom: 0.25rem;
 }
 
 .skeniranje {
-  border-bottom: 1px solid #f7f3ec;
+  padding: 0.7rem 0.75rem;
+  border-radius: 10px;
   font-size: 0.9rem;
 }
-.skeniranje:last-child {
-  border-bottom: 0;
+.skeniranje:nth-child(even) {
+  background: #f8f3ea;
 }
-.skeniranje > span {
+
+.skeniranje > span,
+.skDetalji > span {
   min-width: 0;
   overflow-wrap: anywhere;
 }
+
 .skeniranje small {
   display: block;
   color: #78716c;
   font-size: 0.78rem;
+}
+
+.skVrijeme b {
+  font-weight: 700;
+}
+
+/* Na računalniku štirje ločeni stolpci. */
+.skDetalji {
+  display: contents;
 }
 
 /* ---- Brisanje ---- */
@@ -354,72 +448,83 @@
   }
 }
 
-/* ---- Telefon ---- */
+/* ---- Telefon: preprosto ---- */
 
 @media (max-width: 720px) {
   .listaAlati {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .kpiSporedni,
+  .samoVeci {
+    display: none !important;
+  }
+
+  /* Seznam: ena vrstica — ime z barvo in drobna podvrstica levo, število desno. */
   .kodZaglavlje,
-  .skZaglavlje {
+  .kodSlika,
+  .kodCilj,
+  .cipovi,
+  .kodUkupno,
+  .kodZadnje,
+  .kodStrelica {
     display: none;
   }
-
-  /* Zgoraj slika in ime, spodaj tri številke z oznakami. */
   .kodRed {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.9rem;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 0.75rem;
+    padding: 0.8rem 0.95rem;
+    border-radius: 14px;
   }
-  .kodSlika {
-    width: 56px;
-    height: 56px;
-  }
-  .kodInfo {
-    flex: 0 0 calc(100% - 56px - 20px - 1.5rem);
-  }
-  /* Puščica je v HTML zadnja; order jo pripne v prvo vrstico, da ta ostane
-     polna in tri številke skupaj preskočijo v drugo. */
-  .kodStrelica {
-    width: 20px;
-    order: 1;
-  }
-  .kodBroj,
-  .kodUkupno,
-  .kodZadnje {
-    order: 2;
-    flex: 1 1 28%;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.1rem;
-    text-align: left;
-    padding-top: 0.65rem;
-    border-top: 1px solid #f7f3ec;
-    font-size: 0.95rem;
+  .kodPodlinija {
+    display: block;
+    padding-left: calc(12px + 0.5rem);
+    font-size: 0.78rem;
+    color: #78716c;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .kodBroj {
-    font-size: 1.15rem;
-  }
-  .kodBroj::before,
-  .kodUkupno::before,
-  .kodZadnje::before,
-  .skeniranje > span::before {
-    content: attr(data-oznaka);
-    display: block;
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0;
-    color: #78716c;
+    font-size: 1.4rem;
   }
 
-  .skeniranje {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.6rem 1rem;
-    padding: 0.9rem 0;
+  /* Glava kode: majhna slika levo, povezavi v eni vrstici. */
+  .kodKartica {
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 0.9rem;
+    align-items: start;
+  }
+  .kodKarticaSlika {
+    width: 72px;
+    height: 72px;
+    border-radius: 12px;
+  }
+  .kodKarticaSlika > * {
+    width: 64px !important;
+    height: 64px !important;
+  }
+  .kodKarticaInfo {
+    gap: 0.4rem;
+  }
+  .kodKarticaBrojke {
+    display: none;
+  }
+  .linkRed {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+  .linkOznaka {
+    display: none;
+  }
+  .linkVrijednost {
+    flex-wrap: nowrap;
+  }
+  .linkTekst {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.88rem;
   }
 
   .kartice {
@@ -432,22 +537,59 @@
   .karticaLink {
     padding: 0.75rem 0.9rem;
   }
-}
-
-@media (max-width: 560px) {
-  .kodKartica {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 1rem;
-  }
-  .kodKarticaSlika {
-    width: 112px;
-    height: 112px;
-  }
-  .linkRed {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0.15rem;
-  }
   .karticeDesno {
     display: none;
+  }
+
+  .mrezaRaspodjela {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.6rem;
+  }
+
+  /* "Više statistike": na telefonu skrito, dokler se ne odpre. */
+  .viseDugme {
+    display: flex;
+    width: 100%;
+  }
+  .vise:not([data-otvoreno]) .viseSadrzaj {
+    display: none;
+  }
+
+  /* Skeniranje: čas levo, kraj desno, naprava drobno spodaj. */
+  .skZaglavlje {
+    display: none;
+  }
+  .skeniranje {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.1rem 0.75rem;
+    padding: 0.65rem 0.7rem;
+    font-size: 0.88rem;
+  }
+  .skLokacija {
+    text-align: right;
+    font-weight: 600;
+  }
+  .skVrijeme small {
+    font-size: 0.72rem;
+  }
+  .skDetalji {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 0.4rem;
+    font-size: 0.76rem;
+    color: #78716c;
+  }
+  .skDetalji small {
+    display: inline;
+    margin-left: 0.3rem;
+    font-size: inherit;
+  }
+  .skDetalji > span[data-prazno] {
+    display: none;
+  }
+  .skDetalji > span:not([data-prazno]) ~ span:not([data-prazno])::before {
+    content: "·";
+    margin-right: 0.4rem;
   }
 }
