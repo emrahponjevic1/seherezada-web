@@ -8,7 +8,7 @@ import s from "@/app/(statistika)/_qr/Statistika.module.css";
 export default function Raspodjela({
   naslov,
   redovi,
-  najvise = 8,
+  najvise = 5,
 }: {
   naslov: string;
   redovi: { naziv: string | null; broj: number }[];

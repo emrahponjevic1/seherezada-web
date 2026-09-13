@@ -904,7 +904,6 @@ textarea.unos {
   .sekcija {
     padding: 3.5rem 1.25rem 4rem;
   }
-  .kpiRed,
   .mreza3,
   .red2,
   .red3 {
@@ -914,9 +913,51 @@ textarea.unos {
     padding: 1.15rem;
     border-radius: 18px;
   }
-  .kpiVrijednost {
-    font-size: 1.9rem;
+
+  /* Številke ostanejo 2 × 2 — ena pod drugo bi zasedle ves zaslon. */
+  .kpiRed {
+    gap: 0.6rem;
   }
+  .kpi {
+    padding: 0.9rem 1rem;
+    border-radius: 18px;
+    gap: 0.2rem;
+  }
+  .kpiOznaka {
+    font-size: 0.75rem;
+  }
+  .kpiVrijednost {
+    font-size: 1.6rem;
+  }
+  .kpiVrijednost.kpiTekst {
+    font-size: 1rem;
+  }
+  .kpiDodatak {
+    font-size: 0.72rem;
+  }
+
+  /* Obdobja v eni vrstici, ki se podrsa — namesto dveh prelomljenih vrstic. */
+  .filteri {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    margin: 0 -1.25rem;
+    padding: 0 1.25rem 0.25rem;
+    scrollbar-width: none;
+  }
+  .filteri::-webkit-scrollbar {
+    display: none;
+  }
+  .filter {
+    flex: none;
+  }
+
+  .glavaRadnje {
+    width: 100%;
+  }
+  .glavaRadnje > * {
+    flex: 1 1 auto;
+  }
+
   .prijavaKartica {
     padding: 1.6rem;
   }

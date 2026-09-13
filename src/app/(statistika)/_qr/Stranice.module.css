@@ -1,0 +1,453 @@
+/* ---------------------------------------------------------------------------
+   Postavitve strani /statistika in /statistika/[id].
+   Skupni gradniki (gumbi, kartice, številke) so v Statistika.module.css.
+   --------------------------------------------------------------------------- */
+
+/* ---- Seznam kod ---- */
+
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.listaAlati {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 230px;
+  gap: 0.75rem;
+}
+
+.kodovi {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.kodZaglavlje,
+.kodRed {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) 130px 80px 150px 20px;
+  align-items: center;
+  column-gap: 1.25rem;
+}
+
+.kodZaglavlje {
+  padding: 0 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #78716c;
+}
+
+.desno {
+  text-align: right;
+}
+
+.kodRed {
+  padding: 0.75rem 1rem;
+  border: 1px solid #f2ede4;
+  border-radius: 18px;
+  background: #fffdfa;
+  color: #1c1917;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+.kodRed:hover {
+  border-color: #fed7aa;
+  background: #fff;
+  box-shadow: 0 10px 30px -12px rgba(234, 88, 12, 0.25);
+}
+.kodRed:focus-visible {
+  outline: 2px solid #ea580c;
+  outline-offset: 2px;
+}
+
+.kodSlika {
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+}
+
+.kodInfo {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.kodIme {
+  font-weight: 800;
+  font-size: 1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kodCilj {
+  font-size: 0.8rem;
+  color: #78716c;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cipovi {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.15rem;
+}
+.cipovi > * {
+  margin: 0 !important;
+}
+
+.kodBroj,
+.kodUkupno {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.kodBroj {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.kodUkupno {
+  font-weight: 700;
+  color: #57534e;
+}
+
+.kodZadnje {
+  font-size: 0.88rem;
+  color: #57534e;
+}
+
+.kodStrelica {
+  color: #a8a29e;
+  font-weight: 700;
+}
+.kodRed:hover .kodStrelica {
+  color: #ea580c;
+}
+
+/* ---- Glava kode ---- */
+
+.kodKartica {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.kodKarticaSlika {
+  width: 132px;
+  height: 132px;
+  display: grid;
+  place-items: center;
+  border-radius: 18px;
+  background: #fffcf8;
+  border: 1px solid #f2ede4;
+  transition: border-color 0.15s;
+}
+.kodKarticaSlika:hover {
+  border-color: #fed7aa;
+}
+
+.kodKarticaInfo {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.linkRed {
+  display: grid;
+  grid-template-columns: 105px minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: baseline;
+  font-size: 0.92rem;
+}
+
+.linkOznaka {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #78716c;
+}
+
+.linkVrijednost {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  overflow-wrap: anywhere;
+}
+
+.kodKarticaBrojke {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  gap: 0.2rem;
+  padding-left: 1.5rem;
+  border-left: 1px solid #f2ede4;
+  min-width: 150px;
+}
+
+.velikiBroj {
+  font-size: 2.6rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.kopiraj {
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.3rem 0.75rem;
+  border-radius: 99px;
+  border: 1px solid #f2ede4;
+  background: #fff;
+  color: #57534e;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.kopiraj:hover {
+  border-color: #fed7aa;
+  color: #c2410c;
+}
+.kopirano,
+.kopirano:hover {
+  border-color: #a7f3d0;
+  background: #ecfdf5;
+  color: #047857;
+}
+
+/* ---- Zavihka Statistika / Uredi ---- */
+
+.kartice {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.25rem;
+  border-bottom: 1px solid #f2ede4;
+}
+
+.karticaLink {
+  padding: 0.8rem 1.1rem;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #78716c;
+  border-bottom: 2.5px solid transparent;
+  margin-bottom: -1px;
+  white-space: nowrap;
+}
+.karticaLink:hover {
+  color: #1c1917;
+}
+
+.karticaAktivna,
+.karticaAktivna:hover {
+  color: #1c1917;
+  border-bottom-color: #ea580c;
+}
+
+.karticeDesno {
+  margin-left: auto;
+  padding-bottom: 0.5rem;
+}
+
+.alatnaTraka {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  flex-wrap: wrap;
+}
+
+/* ---- Statistika ---- */
+
+.mrezaRaspodjela {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.skeniranja {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.skZaglavlje,
+.skeniranje {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1.2fr) minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1fr) 80px;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.7rem 0.25rem;
+}
+
+.skZaglavlje {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #78716c;
+  border-bottom: 1px solid #f2ede4;
+}
+
+.skeniranje {
+  border-bottom: 1px solid #f7f3ec;
+  font-size: 0.9rem;
+}
+.skeniranje:last-child {
+  border-bottom: 0;
+}
+.skeniranje > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.skeniranje small {
+  display: block;
+  color: #78716c;
+  font-size: 0.78rem;
+}
+
+/* ---- Brisanje ---- */
+
+.opasnaZona {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  border-color: #fecaca;
+}
+.opasnaZona > div {
+  flex: 1 1 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+/* ---- Tablica ---- */
+
+@media (max-width: 900px) {
+  .kodKartica {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+  .kodKarticaBrojke {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    align-items: baseline;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 0.35rem 0.75rem;
+    text-align: left;
+    border-left: 0;
+    border-top: 1px solid #f2ede4;
+    padding: 1rem 0 0;
+    min-width: 0;
+  }
+  .velikiBroj {
+    font-size: 2rem;
+  }
+}
+
+/* ---- Telefon ---- */
+
+@media (max-width: 720px) {
+  .listaAlati {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .kodZaglavlje,
+  .skZaglavlje {
+    display: none;
+  }
+
+  /* Zgoraj slika in ime, spodaj tri številke z oznakami. */
+  .kodRed {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.9rem;
+  }
+  .kodSlika {
+    width: 56px;
+    height: 56px;
+  }
+  .kodInfo {
+    flex: 0 0 calc(100% - 56px - 20px - 1.5rem);
+  }
+  /* Puščica je v HTML zadnja; order jo pripne v prvo vrstico, da ta ostane
+     polna in tri številke skupaj preskočijo v drugo. */
+  .kodStrelica {
+    width: 20px;
+    order: 1;
+  }
+  .kodBroj,
+  .kodUkupno,
+  .kodZadnje {
+    order: 2;
+    flex: 1 1 28%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    text-align: left;
+    padding-top: 0.65rem;
+    border-top: 1px solid #f7f3ec;
+    font-size: 0.95rem;
+  }
+  .kodBroj {
+    font-size: 1.15rem;
+  }
+  .kodBroj::before,
+  .kodUkupno::before,
+  .kodZadnje::before,
+  .skeniranje > span::before {
+    content: attr(data-oznaka);
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    color: #78716c;
+  }
+
+  .skeniranje {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.6rem 1rem;
+    padding: 0.9rem 0;
+  }
+
+  .kartice {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .kartice::-webkit-scrollbar {
+    display: none;
+  }
+  .karticaLink {
+    padding: 0.75rem 0.9rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .kodKartica {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+  }
+  .kodKarticaSlika {
+    width: 112px;
+    height: 112px;
+  }
+  .linkRed {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.15rem;
+  }
+  .karticeDesno {
+    display: none;
+  }
+}

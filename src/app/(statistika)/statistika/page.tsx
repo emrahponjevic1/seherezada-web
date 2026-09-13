@@ -8,7 +8,7 @@ import Zaglavlje from "@/app/(statistika)/_qr/Zaglavlje";
 import { bazniUrl } from "@/app/(statistika)/_qr/bazniUrl";
 import FilterRaspona from "@/app/(statistika)/_qr/FilterRaspona";
 import { broj, datumVrijeme, oznakaDana, relativno } from "@/app/(statistika)/_qr/format";
-import QrSlicica from "@/app/(statistika)/_qr/QrSlicica";
+import ListaKodova, { type KodZaListu } from "@/app/(statistika)/_qr/ListaKodova";
 import { procitajRaspon } from "@/app/(statistika)/_qr/raspon";
 import { pripraviQrTabele } from "@/app/(statistika)/_qr/shema";
 import { ZADANI_STIL } from "@/app/(statistika)/_qr/stil";
@@ -37,6 +37,26 @@ export default async function StatistikaPage({
   );
   const period = raspon.dani === null ? "od početka" : raspon.dani === 1 ? "danas" : `zadnjih ${raspon.naziv}`;
 
+  const zaListu: KodZaListu[] = kodovi.map((k) => {
+    const mjeren = k.nacin === "mjeren";
+    return {
+      id: k.id,
+      naziv: k.naziv,
+      cilj: k.cilj,
+      mjeren,
+      aktivan: k.aktivan,
+      qrPodaci: mjeren ? `${bazniUrl()}/q/${k.slug}` : k.cilj,
+      stil: { ...ZADANI_STIL, ...k.stil },
+      uRasponu: k.u_rasponu,
+      uRasponuTekst: broj(k.u_rasponu),
+      ukupno: k.ukupno,
+      ukupnoTekst: broj(k.ukupno),
+      zadnje: relativno(k.zadnje),
+      zadnjeTacno: datumVrijeme(k.zadnje),
+      kreiran: new Date(k.kreiran).getTime(),
+    };
+  });
+
   return (
     <main className={s.sekcija}>
       <div className={s.kontejner}>
@@ -44,7 +64,7 @@ export default async function StatistikaPage({
           oznaka="Statistika"
           vodeniZig="QR"
           naslov="QR kodovi"
-          podnaslov="Svi kodovi na jednom mjestu: koliko puta je koji skeniran, odakle i s kojeg uređaja."
+          podnaslov="Koliko puta je koji kod skeniran, odakle i s kojeg uređaja."
         >
           <Link href="/statistika/novi" className={s.dugme}>
             + Novi QR kod
@@ -60,9 +80,9 @@ export default async function StatistikaPage({
             <span className={s.kpiDodatak}>{period}</span>
           </div>
           <div className={s.kpi}>
-            <span className={s.kpiOznaka}>Jedinstveni posjetioci</span>
+            <span className={s.kpiOznaka}>Jedinstveni</span>
             <span className={s.kpiVrijednost}>{broj(b.jedinstveni)}</span>
-            <span className={s.kpiDodatak}>isti telefon se broji jednom dnevno</span>
+            <span className={s.kpiDodatak}>isti telefon jednom dnevno</span>
           </div>
           <div className={s.kpi}>
             <span className={s.kpiOznaka}>Aktivni kodovi</span>
@@ -71,7 +91,9 @@ export default async function StatistikaPage({
           </div>
           <div className={s.kpi}>
             <span className={s.kpiOznaka}>Najčešće skeniran</span>
-            <span className={`${s.kpiVrijednost} ${s.kpiTekst}`}>{najbolji?.naziv ?? "—"}</span>
+            <span className={`${s.kpiVrijednost} ${s.kpiTekst}`} title={najbolji?.naziv}>
+              {najbolji?.naziv ?? "—"}
+            </span>
             <span className={s.kpiDodatak}>
               {najbolji ? `${broj(najbolji.u_rasponu)} skeniranja` : "još nema skeniranja"}
             </span>
@@ -81,7 +103,7 @@ export default async function StatistikaPage({
         <section className={s.kartica}>
           <div className={s.karticaGlava}>
             <h2 className={s.karticaNaslov}>
-              Skeniranja {dani.jedinica === "week" ? "po sedmicama" : "po danima"} — svi kodovi
+              Skeniranja {dani.jedinica === "week" ? "po sedmicama" : "po danima"}
             </h2>
             {b.boti > 0 && (
               <span className={s.pomoc}>Isključeno {broj(b.boti)} otvaranja od botova i pregleda linkova.</span>
@@ -94,7 +116,9 @@ export default async function StatistikaPage({
         </section>
 
         <section className={s.kartica}>
-          <h2 className={s.karticaNaslov}>Svi kodovi</h2>
+          <div className={s.karticaGlava}>
+            <h2 className={s.karticaNaslov}>Svi kodovi ({kodovi.length})</h2>
+          </div>
           {kodovi.length === 0 ? (
             <div className={s.prazno}>
               <p>Još nemaš nijedan QR kod.</p>
@@ -103,59 +127,7 @@ export default async function StatistikaPage({
               </Link>
             </div>
           ) : (
-            <div className={s.tabelaOkvir}>
-              <table className={s.tabela}>
-                <thead>
-                  <tr>
-                    <th>Kod</th>
-                    <th>Naziv i odredište</th>
-                    <th>Način</th>
-                    <th className={s.celijaBroj}>Skeniranja ({raspon.naziv.toLowerCase()})</th>
-                    <th className={s.celijaBroj}>Ukupno</th>
-                    <th>Zadnje skeniranje</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {kodovi.map((k) => {
-                    const mjeren = k.nacin === "mjeren";
-                    return (
-                      <tr key={k.id}>
-                        <td>
-                          <Link href={`/statistika/${k.id}`} aria-label={`Detalji: ${k.naziv}`}>
-                            <QrSlicica
-                              podaci={mjeren ? `${bazniUrl()}/q/${k.slug}` : k.cilj}
-                              stil={{ ...ZADANI_STIL, ...k.stil }}
-                              velicina={56}
-                            />
-                          </Link>
-                        </td>
-                        <td>
-                          <Link href={`/statistika/${k.id}`} className={s.kodNaziv}>
-                            {k.naziv}
-                          </Link>
-                          <span className={s.kodLink}>{k.cilj}</span>
-                        </td>
-                        <td>
-                          <span className={`${s.cip} ${mjeren ? s.cipMjeren : s.cipDirektan}`}>
-                            {mjeren ? "S brojanjem" : "Direktno"}
-                          </span>
-                          {!k.aktivan && <span className={`${s.cip} ${s.cipPauziran}`}>Pauziran</span>}
-                        </td>
-                        <td className={s.celijaBroj}>{mjeren ? broj(k.u_rasponu) : "—"}</td>
-                        <td className={s.celijaBroj}>{mjeren ? broj(k.ukupno) : "—"}</td>
-                        <td>
-                          {mjeren ? (
-                            <span title={datumVrijeme(k.zadnje)}>{relativno(k.zadnje)}</span>
-                          ) : (
-                            <span className={s.pomoc}>ne mjeri se</span>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+            <ListaKodova kodovi={zaListu} rasponNaziv={raspon.naziv} />
           )}
         </section>
       </div>
