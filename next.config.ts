@@ -54,6 +54,32 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+
+      /**
+       * STATISTIKA IN KRATKE POVEZAVE QR KOD — NIKOLI V ISKALNIK
+       *
+       * X-Robots-Tag velja za Google, Bing in AI pajke, tudi za odgovore, ki
+       * niso HTML (preusmeritve, CSV). V robots.txt teh poti namenoma NI:
+       * Disallow bi pajku prepovedal prebrati to glavo.
+       *
+       * no-referrer: tuja stran ob kliku iz statistike ne izve njenega naslova.
+       * Vse o tem: src/app/(statistika)/README.md
+       */
+      {
+        source: "/statistika/:path*",
+        headers: [
+          { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive, nosnippet" },
+          { key: "Referrer-Policy", value: "no-referrer" },
+          { key: "Cache-Control", value: "private, no-store" },
+        ],
+      },
+      {
+        source: "/q/:path*",
+        headers: [
+          { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive, nosnippet" },
+          { key: "Referrer-Policy", value: "no-referrer" },
+        ],
+      },
     ];
   },
 };

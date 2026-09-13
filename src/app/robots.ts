@@ -16,6 +16,10 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
+      // /statistika in /q/ tu NAMENOMA nista naštela. Disallow bi Googlu
+      // prepovedal prebrati "noindex" (pošlje ga next.config.ts), naslov bi
+      // se kljub temu lahko znašel v indeksu, robots.txt pa bi vsakomur
+      // izdal, kje je statistika.
       disallow: ["/api/"],
     },
     sitemap: `${SITE_URL}/sitemap.xml`,
