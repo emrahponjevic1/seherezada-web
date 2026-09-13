@@ -49,6 +49,23 @@ const TrashIcon = () => (
   </svg>
 );
 
+const QrIcon = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" {...stroke}>
+    <rect width="5" height="5" x="3" y="3" rx="1" />
+    <rect width="5" height="5" x="16" y="3" rx="1" />
+    <rect width="5" height="5" x="3" y="16" rx="1" />
+    <path d="M21 16h-3a2 2 0 0 0-2 2v3" />
+    <path d="M21 21v.01" />
+    <path d="M12 7v3a2 2 0 0 1-2 2H7" />
+    <path d="M3 12h.01" />
+    <path d="M12 3h.01" />
+    <path d="M12 16v.01" />
+    <path d="M16 12h1" />
+    <path d="M21 12v.01" />
+    <path d="M12 21v-1" />
+  </svg>
+);
+
 const ArrowRightIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" {...stroke} strokeWidth={2.4}>
     <path d="M5 12h14" />
@@ -181,6 +198,16 @@ export default function ZasebnostPageContent() {
               <h3 className={styles.bentoCardTitle}>{t("boniNaslov")}</h3>
               <p className={styles.bentoCardText}>{t("boniOpis")}</p>
             </div>
+
+            {/* Box 5 — QR kode s štetjem skeniranj (/q/…, glej src/app/(statistika)).
+                Čez obe koloni, ker je besedilo daljše. */}
+            <div className={styles.bentoCard} style={{ gridColumn: "1 / -1" }}>
+              <div className={styles.bentoIconWrapper}>
+                <QrIcon />
+              </div>
+              <h3 className={styles.bentoCardTitle}>{t("qrNaslov")}</h3>
+              <p className={styles.bentoCardText}>{t("qrOpis")}</p>
+            </div>
           </div>
         </section>
 
@@ -248,6 +275,8 @@ export default function ZasebnostPageContent() {
           <h2 className={styles.sectionTitle}>{t("razdelek5")}</h2>
           <p className={styles.sectionText}>{t("varnost1")}</p>
           <p className={styles.sectionText}>{t("varnost2")}</p>
+          {/* Rok hrambe se izvaja v src/app/(statistika)/statistika/budilica/route.ts. */}
+          <p className={styles.sectionText}>{t("varnost3")}</p>
         </section>
 
         {/* 5a. Komu podatki gredo — brez tega bi bilo besedilo nepopolno */}
@@ -270,6 +299,11 @@ export default function ZasebnostPageContent() {
                 samo hlinil pošiljanje, tega ni bilo treba navesti; zdaj je. */}
             <p className={styles.bodyText}>
               {t.rich("posta", { b: (chunks) => <strong>{chunks}</strong> })}
+            </p>
+
+            {/* Baza za QR statistiko. */}
+            <p className={styles.bodyText}>
+              {t.rich("baza", { b: (chunks) => <strong>{chunks}</strong> })}
             </p>
           </div>
           <p className={styles.sectionText}>{t("razkritje")}</p>
