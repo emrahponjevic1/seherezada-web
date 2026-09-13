@@ -82,13 +82,12 @@ export default function QrDizajner({
     let ziv = true;
     import("qr-code-styling").then(({ default: QR }) => {
       if (!ziv || !pregled.current) return;
-      if (!instanca.current) {
-        instanca.current = new QR(opcije);
-        pregled.current.replaceChildren();
-        instanca.current.append(pregled.current);
-      } else {
-        instanca.current.update(opcije);
-      }
+      // Vsakič nova slika, ne update(): knjižnica nove nastavitve ZDRUŽI s
+      // starimi, zato izklopljen prelaz barv (gradient) ostane in povozi
+      // izbrano barvo — pike so ostale oranžne, čeprav je bila izbrana črna.
+      instanca.current = new QR(opcije);
+      pregled.current.replaceChildren();
+      instanca.current.append(pregled.current);
     });
     return () => {
       ziv = false;
