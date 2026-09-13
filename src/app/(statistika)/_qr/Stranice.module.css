@@ -624,3 +624,61 @@
     min-width: 0;
   }
 }
+
+/* ---- Prekidač Stupci / Linije in črtni graf ---- */
+
+.grafAlati {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem 1rem;
+  flex-wrap: wrap;
+}
+
+.prekidac {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid #f2ede4;
+  border-radius: 99px;
+  background: #fffdfa;
+  margin-left: auto;
+}
+
+.prekidacDugme {
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.35rem 0.85rem;
+  border: 0;
+  border-radius: 99px;
+  background: transparent;
+  color: #78716c;
+  cursor: pointer;
+}
+.prekidacDugme:hover {
+  color: #1c1917;
+}
+
+.prekidacAktivan,
+.prekidacAktivan:hover {
+  background: #1c1917;
+  color: #fff;
+}
+
+.linija {
+  fill: none;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.krstic {
+  stroke: #d6d3d1;
+  stroke-width: 1;
+}
+
+/* Bel obroč, da se pika vidi, kjer se črte prekrivajo. */
+.tacka {
+  stroke: #fff;
+  stroke-width: 2;
+}
