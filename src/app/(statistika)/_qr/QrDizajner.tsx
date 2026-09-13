@@ -76,7 +76,7 @@ export default function QrDizajner({
 
   const kratkiLink = `${bazniUrl}/q/${slug}`;
   const sadrzaj = nacin === "mjeren" ? kratkiLink : cilj.trim() || bazniUrl;
-  const opcije = useMemo(() => opcijeQr(stil, sadrzaj, 280, "svg"), [stil, sadrzaj]);
+  const opcije = useMemo(() => opcijeQr(stil, sadrzaj, 240, "svg"), [stil, sadrzaj]);
 
   useEffect(() => {
     let ziv = true;

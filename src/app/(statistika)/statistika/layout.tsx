@@ -39,7 +39,7 @@ export default async function StatistikaLayout({ children }: { children: React.R
 
   return (
     <html lang="bs" className={plusJakartaSans.variable}>
-      <body>
+      <body className={s.tijelo}>
         {prijavljen && (
           <header className={s.gornjaTraka}>
             <div className={s.gornjaTrakaUnutra}>

@@ -3,6 +3,13 @@
    Ista pisava, barve in odmiki kot javno spletišče (CLAUDE.md).
    --------------------------------------------------------------------------- */
 
+/* globals.css da body overflow-x: hidden, s čimer body postane lasten
+   drsni vsebnik in position: sticky ne deluje (predogled kode je odšel z
+   zaslona). html še vedno prepreči vodoravno drsenje. */
+.tijelo {
+  overflow: visible;
+}
+
 .sekcija {
   width: 100%;
   box-sizing: border-box;
@@ -836,9 +843,15 @@ textarea.unos {
   min-width: 0;
 }
 
+/* Predogled ostane viden med urejanjem: pod gornjo trako (64 px), največ
+   visok kot zaslon — če ne gre, se drsi sam zase. */
 .dizajnerPregled {
   position: sticky;
-  top: 1.5rem;
+  top: 80px;
+  max-height: calc(100vh - 96px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  border-radius: 22px;
 }
 
 .pregledKvadrat {
@@ -854,7 +867,7 @@ textarea.unos {
     linear-gradient(-45deg, transparent 75%, #f7f3ec 75%);
   background-size: 16px 16px;
   background-position: 0 0, 0 8px, 8px -8px, -8px 0;
-  min-height: 312px;
+  min-height: 272px;
 }
 .pregledKvadrat svg {
   display: block;
