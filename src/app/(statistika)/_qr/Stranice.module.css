@@ -116,6 +116,7 @@
 .cipovi {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 0.35rem;
   margin-top: 0.15rem;
 }
@@ -253,15 +254,18 @@
   min-width: 0;
 }
 
+/* Ločilna črta čez vso višino kartice, številka in oznaki poravnani levo ob njej. */
 .kodKarticaBrojke {
+  align-self: stretch;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  text-align: right;
-  gap: 0.2rem;
-  padding-left: 1.5rem;
+  justify-content: center;
+  align-items: flex-start;
+  text-align: left;
+  gap: 0.25rem;
+  padding-left: 1.75rem;
   border-left: 1px solid #f2ede4;
-  min-width: 150px;
+  min-width: 170px;
 }
 
 .velikiBroj {
@@ -591,5 +595,32 @@
   .skDetalji > span:not([data-prazno]) ~ span:not([data-prazno])::before {
     content: "·";
     margin-right: 0.4rem;
+  }
+}
+
+/* ---- Filter obdobja: gumbi na računalniku, spustni seznam na telefonu ---- */
+
+.filterPadajuci {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .filteriVeci {
+    display: none !important;
+  }
+  .filterPadajuci {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .filterPadajuciOznaka {
+    flex: none;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #57534e;
+  }
+  .filterPadajuci select {
+    flex: 1;
+    min-width: 0;
   }
 }
