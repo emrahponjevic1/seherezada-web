@@ -36,6 +36,16 @@ export interface KodZaUredjivanje {
   aktivan: boolean;
   biljeska: string;
   stil: QrStil;
+  /** Id strani s povezavami, na katero koda vodi. null = navaden naslov. */
+  vodiNa: number | null;
+}
+
+/** Strani s povezavami, med katerimi lahko lastnik izbira odredište. */
+export interface StranicaZaIzbor {
+  id: number;
+  slug: string;
+  naziv: string;
+  aktivna: boolean;
 }
 
 const VELICINE = [512, 1024, 2048, 4096];
@@ -53,14 +63,17 @@ export default function QrDizajner({
   bazniUrl,
   kod,
   predlozeniSlug = "",
+  stranice = [],
 }: {
   bazniUrl: string;
   kod?: KodZaUredjivanje;
   predlozeniSlug?: string;
+  stranice?: StranicaZaIzbor[];
 }) {
   const router = useRouter();
   const [naziv, setNaziv] = useState(kod?.naziv ?? "");
-  const [cilj, setCilj] = useState(kod?.cilj ?? "");
+  const [cilj, setCilj] = useState(kod?.vodiNa ? "" : kod?.cilj ?? "");
+  const [vodiNa, setVodiNa] = useState<number | null>(kod?.vodiNa ?? null);
   const [nacin, setNacin] = useState<Nacin>(kod?.nacin ?? "mjeren");
   const [slug, setSlug] = useState(kod?.slug ?? predlozeniSlug);
   const [aktivan, setAktivan] = useState(kod?.aktivan ?? true);
@@ -74,8 +87,13 @@ export default function QrDizajner({
   const pregled = useRef<HTMLDivElement>(null);
   const instanca = useRef<QRCodeStyling | null>(null);
 
+  // Kadar koda vodi na stran s povezavami, naslova ne tipka lastnik: sestavi
+  // se iz naslova te strani, da se ne moreta razíti.
+  const izabranaStranica = stranice.find((x) => x.id === vodiNa) ?? null;
+  const odrediste = izabranaStranica ? `${bazniUrl}/links/${izabranaStranica.slug}` : cilj.trim();
+
   const kratkiLink = `${bazniUrl}/q/${slug}`;
-  const sadrzaj = nacin === "mjeren" ? kratkiLink : cilj.trim() || bazniUrl;
+  const sadrzaj = nacin === "mjeren" ? kratkiLink : odrediste || bazniUrl;
   const opcije = useMemo(() => opcijeQr(stil, sadrzaj, 240, "svg"), [stil, sadrzaj]);
 
   useEffect(() => {
@@ -130,7 +148,7 @@ export default function QrDizajner({
     setGreska(null);
     setPoruka(null);
     start(async () => {
-      const r = await sacuvajKod({ id: kod?.id, naziv, cilj, nacin, slug, aktivan, biljeska, stil });
+      const r = await sacuvajKod({ id: kod?.id, naziv, cilj: odrediste, vodiNa, nacin, slug, aktivan, biljeska, stil });
       if ("greska" in r) {
         setGreska(r.greska);
         return;
@@ -153,7 +171,7 @@ export default function QrDizajner({
         : "Mijenjaš način u „S brojanjem“: brojat će se samo novi otisci. Već odštampani direktni kodovi i dalje vode pravo na odredište i ne broje se."
     );
   }
-  if (kod && cilj.trim() !== kod.cilj) {
+  if (kod && odrediste !== kod.cilj) {
     napomene.push(
       nacin === "mjeren"
         ? "Već odštampani kodovi će odmah nakon čuvanja voditi na novi link."
@@ -179,17 +197,74 @@ export default function QrDizajner({
             />
           </label>
 
-          <label className={s.polje}>
-            <span className={s.oznakaPolja}>Odredište (link)</span>
-            <input
-              className={s.unos}
-              value={cilj}
-              type="url"
-              inputMode="url"
-              onChange={(e) => setCilj(e.target.value)}
-              placeholder="https://g.page/r/…/review"
-            />
-          </label>
+          <fieldset className={s.nacini}>
+            <legend className={s.oznakaPolja}>Odredište</legend>
+            <label className={`${s.nacin} ${vodiNa === null ? s.nacinAktivan : ""}`}>
+              <input
+                type="radio"
+                name="vrstaCilja"
+                checked={vodiNa === null}
+                onChange={() => setVodiNa(null)}
+              />
+              <span>
+                <span className={s.nacinNaslov}>Vanjski link</span>
+                <span className={s.nacinOpis}>Google recenzija, TripAdvisor, Instagram, meni…</span>
+              </span>
+            </label>
+            <label
+              className={`${s.nacin} ${vodiNa !== null ? s.nacinAktivan : ""}`}
+              aria-disabled={stranice.length === 0}
+            >
+              <input
+                type="radio"
+                name="vrstaCilja"
+                checked={vodiNa !== null}
+                disabled={stranice.length === 0}
+                onChange={() => setVodiNa(stranice[0]?.id ?? null)}
+              />
+              <span>
+                <span className={s.nacinNaslov}>Moja stranica s linkovima</span>
+                <span className={s.nacinOpis}>
+                  {stranice.length === 0
+                    ? "Još nemaš nijednu. Napravi je dugmetom „Kreiraj Linktree“ na /statistika."
+                    : "Jedan kod za meni, ocjene i mreže. Sadržaj mijenjaš kad hoćeš, bez nove štampe."}
+                </span>
+              </span>
+            </label>
+          </fieldset>
+
+          {vodiNa === null ? (
+            <label className={s.polje}>
+              <span className={s.oznakaPolja}>Link</span>
+              <input
+                className={s.unos}
+                value={cilj}
+                type="url"
+                inputMode="url"
+                onChange={(e) => setCilj(e.target.value)}
+                placeholder="https://g.page/r/…/review"
+              />
+            </label>
+          ) : (
+            <label className={s.polje}>
+              <span className={s.oznakaPolja}>Koja stranica</span>
+              <select
+                className={s.unos}
+                value={String(vodiNa)}
+                onChange={(e) => setVodiNa(Number(e.target.value))}
+              >
+                {stranice.map((st) => (
+                  <option key={st.id} value={st.id}>
+                    {st.naziv}
+                    {st.aktivna ? "" : " — ugašena"}
+                  </option>
+                ))}
+              </select>
+              <span className={s.pomoc}>
+                Vodi na {odrediste.replace(/^https?:\/\//, "")} · sadržaj uređuješ na stranici linktreeja
+              </span>
+            </label>
+          )}
 
           <fieldset className={s.nacini}>
             <legend className={s.oznakaPolja}>Način</legend>

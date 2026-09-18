@@ -1,6 +1,7 @@
 import Link from "next/link";
 import s from "@/app/(statistika)/_qr/Statistika.module.css";
 import p from "@/app/(statistika)/_qr/Stranice.module.css";
+import l from "@/app/(statistika)/_linkovi/Panel.module.css";
 import { imaBazu } from "@/app/(statistika)/_qr/baza";
 import { BOJA_OSTALI, bojeKodova } from "@/app/(statistika)/_qr/boje";
 import NemaBaze from "@/app/(statistika)/_qr/NemaBaze";
@@ -16,6 +17,7 @@ import { pripraviQrTabele } from "@/app/(statistika)/_qr/shema";
 import SlojeviGrafikon, { type Serija } from "@/app/(statistika)/_qr/SlojeviGrafikon";
 import { ZADANI_STIL } from "@/app/(statistika)/_qr/stil";
 import { brojke, poDanimaPoKodu, sviKodovi } from "@/app/(statistika)/_qr/upiti";
+import { sveStranice } from "@/app/(statistika)/_linkovi/upiti";
 
 export const metadata = { title: "QR statistika" };
 
@@ -30,7 +32,12 @@ export default async function StatistikaPage({
 
   await pripraviQrTabele();
   const raspon = procitajRaspon(r);
-  const [kodovi, b, dani] = await Promise.all([sviKodovi(raspon), brojke(null, raspon), poDanimaPoKodu(raspon)]);
+  const [kodovi, b, dani, stranice] = await Promise.all([
+    sviKodovi(raspon),
+    brojke("kodovi", raspon),
+    poDanimaPoKodu("kodovi", raspon),
+    sveStranice(raspon),
+  ]);
 
   const aktivnih = kodovi.filter((k) => k.aktivan).length;
   const najbolji = kodovi.reduce<(typeof kodovi)[number] | null>(
@@ -85,7 +92,10 @@ export default async function StatistikaPage({
           podnaslov="Koliko puta je koji kod skeniran, odakle i s kojeg uređaja."
         >
           <Link href="/statistika/novi" className={s.dugme}>
-            + Novi QR kod
+            + Kreiraj QR kod
+          </Link>
+          <Link href="/statistika/linkovi/nova" className={s.dugme}>
+            + Kreiraj Linktree
           </Link>
         </Zaglavlje>
 
@@ -147,6 +157,55 @@ export default async function StatistikaPage({
             </div>
           ) : (
             <ListaKodova kodovi={zaListu} rasponNaziv={raspon.naziv} />
+          )}
+        </section>
+
+        {/* ---- Stranice s linkovima ----
+            Gumbi teh strani so tudi vrstice v qr_kodovi, a v seznamu zgoraj jih
+            ni: tam so kode za tisk, tu strani, ki jih koda odpre. */}
+        <section className={s.kartica}>
+          <div className={s.karticaGlava}>
+            <h2 className={s.karticaNaslov}>Linktree stranice ({stranice.length})</h2>
+            <span className={s.pomoc}>Jedan kod na stolu, svi linkovi na jednom mjestu</span>
+          </div>
+
+          {stranice.length === 0 ? (
+            <div className={s.prazno}>
+              <p>Još nemaš nijednu stranicu s linkovima.</p>
+              <Link href="/statistika/linkovi/nova" className={s.dugme}>
+                Kreiraj Linktree
+              </Link>
+            </div>
+          ) : (
+            <ul className={l.stranice}>
+              {stranice.map((st) => (
+                <li key={st.id}>
+                  <Link href={`/statistika/linkovi/${st.id}`} className={l.stranicaRed}>
+                    <span className={l.stranicaIme}>
+                      <span className={l.stranicaNaziv}>
+                        {st.naziv}
+                        {st.glavna && " · glavna"}
+                        {!st.aktivna && " · ugašena"}
+                      </span>
+                      <span className={l.stranicaAdresa}>
+                        /links/{st.slug} · {st.dugmadi} dugmadi
+                      </span>
+                    </span>
+                    <span className={l.stranicaBroj}>
+                      <span className={l.stranicaBrojVrijednost}>{broj(st.otvaranja)}</span>
+                      <span className={l.stranicaBrojOznaka}>otvaranja</span>
+                    </span>
+                    <span className={l.stranicaBroj}>
+                      <span className={l.stranicaBrojVrijednost}>{broj(st.klikovi)}</span>
+                      <span className={l.stranicaBrojOznaka}>klikova</span>
+                    </span>
+                    <span className={p.kodStrelica} aria-hidden="true">
+                      →
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
           )}
         </section>
       </div>

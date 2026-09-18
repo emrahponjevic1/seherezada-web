@@ -1,0 +1,491 @@
+/* ---------------------------------------------------------------------------
+   UREJANJE STRANI S POVEZAVAMI
+
+   Postavitev (dve koloni, lepljiv predogled) je prevzeta iz oblikovalnika kod:
+   .dizajner, .dizajnerForma in .dizajnerPregled v _qr/Statistika.module.css.
+   Tu je samo tisto, česar tam ni.
+   --------------------------------------------------------------------------- */
+
+/* ---- Okvir telefona okoli predogleda ---- */
+
+.telefon {
+  border: 1px solid #f2ede4;
+  border-radius: 28px;
+  overflow: hidden;
+  background: #fffcf8;
+  box-shadow: 0 10px 30px -5px rgba(28, 25, 23, 0.08);
+}
+
+.telefonGlava {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  border-bottom: 1px solid #f2ede4;
+  background: #fff;
+  font-size: 0.75rem;
+  color: #78716c;
+}
+
+.telefonNaslov {
+  font-weight: 600;
+  color: #57534e;
+}
+
+/* ---- Seznam gumbov ---- */
+
+.redovi {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.red {
+  border: 1px solid #f2ede4;
+  border-radius: 16px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.redObrisan {
+  opacity: 0.55;
+}
+
+.redObrisan .redNatpis {
+  text-decoration: line-through;
+}
+
+.redGlava {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.7rem;
+}
+
+.strelice {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: none;
+}
+
+.strelica {
+  font: inherit;
+  font-size: 0.65rem;
+  line-height: 1;
+  padding: 0.25rem 0.35rem;
+  min-height: 1.5rem;
+  border: 1px solid #f2ede4;
+  border-radius: 8px;
+  background: #fffcf8;
+  color: #57534e;
+  cursor: pointer;
+}
+
+.strelica:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.redIkona {
+  font-size: 1.15rem;
+  width: 1.75rem;
+  text-align: center;
+  flex: none;
+}
+
+.redInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.redNatpis {
+  font-size: 0.9rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.redCilj {
+  font-size: 0.72rem;
+  color: #78716c;
+  overflow-wrap: anywhere;
+}
+
+.redAlati {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex: none;
+}
+
+.alat {
+  font: inherit;
+  font-size: 0.8rem;
+  line-height: 1;
+  padding: 0.45rem 0.55rem;
+  min-height: 2rem;
+  min-width: 2rem;
+  border: 1px solid #f2ede4;
+  border-radius: 10px;
+  background: #fffcf8;
+  color: #57534e;
+  cursor: pointer;
+}
+
+.alat:hover {
+  background: #fff;
+  color: #1c1917;
+}
+
+.alatOpasan:hover {
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+/* ---- Odprt urejevalnik gumba ---- */
+
+.redTijelo {
+  border-top: 1px dashed #f2ede4;
+  padding: 0.85rem 0.7rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background: #fffdfa;
+}
+
+.redPar {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  gap: 0.6rem;
+  align-items: start;
+}
+
+/* ---- Prevodi ---- */
+
+.prevodi {
+  border: 1px dashed #f2ede4;
+  border-radius: 12px;
+  padding: 0.5rem 0.7rem;
+  background: #fffdfa;
+}
+
+.prevodiNaslov {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #57534e;
+  cursor: pointer;
+  list-style: none;
+}
+
+.prevodiNaslov::-webkit-details-marker {
+  display: none;
+}
+
+.prevodiNaslov::before {
+  content: "▸ ";
+  color: #a8a29e;
+}
+
+details[open] > .prevodiNaslov::before {
+  content: "▾ ";
+}
+
+.prevodiTijelo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.6rem;
+}
+
+.prevodRed {
+  display: grid;
+  grid-template-columns: 3.25rem minmax(0, 1fr);
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.prevodOznaka {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #78716c;
+  letter-spacing: 0.04em;
+}
+
+/* ---- Barve ---- */
+
+.boje {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.boja {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  box-shadow: inset 0 0 0 1px rgba(28, 25, 23, 0.08);
+  cursor: pointer;
+  padding: 0;
+}
+
+.bojaAktivna {
+  border-color: #1c1917;
+}
+
+.bojaPrazna {
+  background: #fff;
+  font-size: 0.6rem;
+  color: #78716c;
+  width: auto;
+  padding: 0 0.55rem;
+  border-radius: 99px;
+  box-shadow: inset 0 0 0 1px #f2ede4;
+}
+
+/* ---- Vrstica s stranicama na /statistika ---- */
+
+.stranice {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.stranicaRed {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.85rem 0.25rem;
+  border-bottom: 1px solid #f2ede4;
+  text-decoration: none;
+  color: inherit;
+}
+
+.stranicaRed:last-child {
+  border-bottom: 0;
+}
+
+.stranicaRed:hover {
+  background: #fffdfa;
+}
+
+.stranicaIme {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.stranicaNaziv {
+  font-weight: 700;
+  font-size: 0.95rem;
+  overflow-wrap: anywhere;
+}
+
+.stranicaAdresa {
+  font-size: 0.75rem;
+  color: #78716c;
+  overflow-wrap: anywhere;
+}
+
+.stranicaBroj {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.stranicaBrojVrijednost {
+  font-size: 1.1rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.stranicaBrojOznaka {
+  font-size: 0.68rem;
+  color: #78716c;
+}
+
+/* ---- Tabela dugmadi u statistici stranice ---- */
+
+.tabelaDugmadi {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dugmeRed {
+  display: grid;
+  grid-template-columns: 1.75rem minmax(0, 1fr) auto auto auto 1rem;
+  gap: 0.6rem;
+  align-items: center;
+  padding: 0.7rem 0.25rem;
+  border-bottom: 1px solid #f2ede4;
+  text-decoration: none;
+  color: inherit;
+}
+
+.dugmeRed:last-child {
+  border-bottom: 0;
+}
+
+.dugmeRed:hover {
+  background: #fffdfa;
+}
+
+.dugmeUgasen {
+  opacity: 0.55;
+}
+
+.dugmeInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.dugmeNatpis {
+  font-weight: 700;
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+
+.dugmeCilj {
+  font-size: 0.72rem;
+  color: #78716c;
+  overflow-wrap: anywhere;
+}
+
+.dugmeBroj {
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  text-align: right;
+  min-width: 3ch;
+}
+
+.dugmeUdio,
+.dugmeZadnje {
+  font-size: 0.75rem;
+  color: #78716c;
+  text-align: right;
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .dugmeRed {
+    grid-template-columns: 1.75rem minmax(0, 1fr) auto;
+  }
+  .dugmeUdio,
+  .dugmeZadnje {
+    display: none;
+  }
+  /* Na telefonu odpade puščica, ne številka: obe številki sta bistvo vrstice. */
+  .stranicaRed {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 0.6rem;
+  }
+  .stranicaRed > :last-child {
+    display: none;
+  }
+  .redPar {
+    grid-template-columns: 1fr;
+    gap: 0.3rem;
+  }
+}
+
+/* ---- Izbirnik ikone ---- */
+
+.ikone {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(2.6rem, 1fr));
+  gap: 0.35rem;
+}
+
+.ikonaIzbor {
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border: 1px solid #f2ede4;
+  border-radius: 12px;
+  background: #fff;
+  color: #57534e;
+  cursor: pointer;
+  padding: 0;
+}
+
+.ikonaIzbor:hover {
+  color: #1c1917;
+  border-color: #fed7aa;
+}
+
+.ikonaAktivna {
+  border-color: #1c1917;
+  color: #1c1917;
+  box-shadow: inset 0 0 0 1px #1c1917;
+}
+
+.emojiRed {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 5rem;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+/* ---- Pretraga ikona (Iconify) ---- */
+
+.pretraga {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: 0.65rem;
+}
+
+.rezultati {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(2.6rem, 1fr));
+  gap: 0.35rem;
+  /* Do 64 zadetkov; brez omejitve bi mrežica potisnila ostala polja daleč dol. */
+  max-height: 12.5rem;
+  overflow-y: auto;
+  padding: 0.1rem;
+}
+
+.rezultati .ikonaIzbor:disabled {
+  opacity: 0.5;
+  cursor: progress;
+}
+
+.izabranaIkona {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.4rem;
+  font-size: 0.78rem;
+  color: #57534e;
+}
+
+/* Ikona pred imenom gumba v tabeli statistike. */
+.dugmeIkona {
+  display: inline-flex;
+  vertical-align: -0.15em;
+  margin-right: 0.4rem;
+  color: #1c1917;
+}
+
+/* Ikona v zaprti vrstici urejevalnika — mora ostati v svojem okvirčku. */
+.redIkona {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}

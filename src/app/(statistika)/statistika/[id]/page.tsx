@@ -29,6 +29,8 @@ import {
   relativno,
 } from "@/app/(statistika)/_qr/format";
 import { procitajRaspon, type Raspon } from "@/app/(statistika)/_qr/raspon";
+import { popisStranica } from "@/app/(statistika)/_linkovi/upiti";
+import { jeInterno, nazivInterne } from "@/app/(statistika)/_linkovi/interniCilj";
 import { jePrijavljen } from "@/app/(statistika)/_qr/sesija";
 import { ZADANI_STIL } from "@/app/(statistika)/_qr/stil";
 import {
@@ -59,21 +61,36 @@ type Red = { vrijednost: string | null; broj: number };
 const preimenuj = (redovi: Red[], ime: (v: string | null) => string | null = (v) => v) =>
   redovi.map((r) => ({ naziv: ime(r.vrijednost), broj: r.broj }));
 
-async function Statistika({ kodId, naziv, raspon }: { kodId: number; naziv: string; raspon: Raspon }) {
+async function Statistika({
+  kodId,
+  naziv,
+  raspon,
+  jeDugme,
+}: {
+  kodId: number;
+  naziv: string;
+  raspon: Raspon;
+  /** Gumb na strani s povezavami se ne skenira, ampak klikne. */
+  jeDugme: boolean;
+}) {
+  const opseg = { kod: kodId };
+  const R = jeDugme
+    ? { veliko: "Klikovi", malo: "klikova", ko: "Ko klikne", zadnja: "Zadnji klikovi", nema: "Još nema klikova." }
+    : { veliko: "Skeniranja", malo: "skeniranja", ko: "Ko skenira", zadnja: "Zadnja skeniranja", nema: "Još nema skeniranja." };
   const [b, dani, sati, sedmica, drzave, gradovi, uredjaji, os, preglednici, proizvodjaci, modeli, jezici, zadnja] =
     await Promise.all([
-      brojke(kodId, raspon),
-      poDanima(kodId, raspon),
-      poSatima(kodId, raspon),
-      poDanuSedmice(kodId, raspon),
-      raspodjela(kodId, raspon, "drzava"),
-      raspodjela(kodId, raspon, "grad"),
-      raspodjela(kodId, raspon, "uredjaj"),
-      raspodjela(kodId, raspon, "os"),
-      raspodjela(kodId, raspon, "preglednik"),
-      raspodjela(kodId, raspon, "proizvodjac"),
-      raspodjela(kodId, raspon, "model"),
-      raspodjela(kodId, raspon, "jezik"),
+      brojke(opseg, raspon),
+      poDanima(opseg, raspon),
+      poSatima(opseg, raspon),
+      poDanuSedmice(opseg, raspon),
+      raspodjela(opseg, raspon, "drzava"),
+      raspodjela(opseg, raspon, "grad"),
+      raspodjela(opseg, raspon, "uredjaj"),
+      raspodjela(opseg, raspon, "os"),
+      raspodjela(opseg, raspon, "preglednik"),
+      raspodjela(opseg, raspon, "proizvodjac"),
+      raspodjela(opseg, raspon, "model"),
+      raspodjela(opseg, raspon, "jezik"),
       zadnjaSkeniranja(kodId, 50),
     ]);
 
@@ -87,7 +104,7 @@ async function Statistika({ kodId, naziv, raspon }: { kodId: number; naziv: stri
 
       <div className={s.kpiRed}>
         <div className={s.kpi}>
-          <span className={s.kpiOznaka}>Skeniranja</span>
+          <span className={s.kpiOznaka}>{R.veliko}</span>
           <span className={s.kpiVrijednost}>{broj(b.skeniranja)}</span>
           <span className={s.kpiDodatak}>{period}</span>
         </div>
@@ -104,7 +121,7 @@ async function Statistika({ kodId, naziv, raspon }: { kodId: number; naziv: stri
           <span className={s.kpiDodatak}>{period}</span>
         </div>
         <div className={`${s.kpi} ${p.kpiSporedni}`}>
-          <span className={s.kpiOznaka}>Najviše skeniranja</span>
+          <span className={s.kpiOznaka}>Najviše {R.malo}</span>
           <span className={s.kpiVrijednost}>
             {najcesciSat.broj > 0
               ? `${najcesciSat.kljuc.padStart(2, "0")}–${String((Number(najcesciSat.kljuc) + 1) % 24).padStart(2, "0")}h`
@@ -116,18 +133,20 @@ async function Statistika({ kodId, naziv, raspon }: { kodId: number; naziv: stri
 
       <section className={s.kartica}>
         <div className={s.karticaGlava}>
-          <h2 className={s.karticaNaslov}>Skeniranja {dani.jedinica === "week" ? "po sedmicama" : "po danima"}</h2>
+          <h2 className={s.karticaNaslov}>
+            {R.veliko} {dani.jedinica === "week" ? "po sedmicama" : "po danima"}
+          </h2>
           {b.boti > 0 && (
             <span className={s.pomoc}>Isključeno {broj(b.boti)} otvaranja od botova i pregleda linkova.</span>
           )}
         </div>
         <StupciGrafikon
-          opis={`Skeniranja koda ${naziv} ${period}`}
+          opis={`${R.veliko} — ${naziv} ${period}`}
           podaci={dani.stupci.map((d) => ({ ...oznakaDana(d.kljuc, dani.jedinica), broj: d.broj }))}
         />
       </section>
 
-      <h2 className={s.podnaslovSekcije}>Ko skenira</h2>
+      <h2 className={s.podnaslovSekcije}>{R.ko}</h2>
       <div className={p.mrezaRaspodjela}>
         <Raspodjela naslov="Država" redovi={preimenuj(drzave, imeDrzave)} />
         <Raspodjela naslov="Grad" redovi={preimenuj(gradovi)} />
@@ -141,7 +160,7 @@ async function Statistika({ kodId, naziv, raspon }: { kodId: number; naziv: stri
             <h2 className={s.karticaNaslov}>Po satu u danu</h2>
             <StupciGrafikon
               visina={200}
-              opis="Skeniranja po satu u danu"
+              opis={`${R.veliko} po satu u danu`}
               podaci={sati.map((t) => ({
                 oznaka: `${t.kljuc}h`,
                 puna: `${t.kljuc.padStart(2, "0")}:00–${t.kljuc.padStart(2, "0")}:59`,
@@ -153,7 +172,7 @@ async function Statistika({ kodId, naziv, raspon }: { kodId: number; naziv: stri
             <h2 className={s.karticaNaslov}>Po danu u sedmici</h2>
             <StupciGrafikon
               visina={200}
-              opis="Skeniranja po danu u sedmici"
+              opis={`${R.veliko} po danu u sedmici`}
               podaci={sedmica.map((t, i) => ({ oznaka: DANI_SEDMICE[i], puna: DANI_SEDMICE_PUNO[i], broj: t.broj }))}
             />
           </section>
@@ -168,11 +187,11 @@ async function Statistika({ kodId, naziv, raspon }: { kodId: number; naziv: stri
 
       <section className={s.kartica}>
         <div className={s.karticaGlava}>
-          <h2 className={s.karticaNaslov}>Zadnja skeniranja</h2>
+          <h2 className={s.karticaNaslov}>{R.zadnja}</h2>
           <span className={s.pomoc}>Zadnjih 50 · sva su u CSV izvozu</span>
         </div>
         {zadnja.length === 0 ? (
-          <p className={s.prazno}>Još nema skeniranja.</p>
+          <p className={s.prazno}>{R.nema}</p>
         ) : (
           <div>
             <div className={p.skZaglavlje} aria-hidden="true">
@@ -236,30 +255,47 @@ export default async function KodPage({
 
   const raspon = procitajRaspon(r);
   const mjeren = kod.nacin === "mjeren";
+  // Vrstica z stranica_id ni koda za tisk, ampak gumb na strani s povezavami.
+  // Ureja se tam, ne tu, zato zavihka z oblikovalnikom ne pokažemo.
+  const jeDugme = kod.stranica_id !== null;
+  const potStranice = `/statistika/linkovi/${kod.stranica_id}`;
   const kratkiLink = `${bazniUrl()}/q/${kod.slug}`;
   const stil = { ...ZADANI_STIL, ...kod.stil };
-  const [ukupno, idjevi] = await Promise.all([brojke(kodId, procitajRaspon("sve")), idjeviKodova()]);
+  const [ukupno, idjevi, stranice] = await Promise.all([
+    brojke({ kod: kodId }, procitajRaspon("sve")),
+    idjeviKodova(),
+    popisStranica(),
+  ]);
   // Ista barva kot pri tej kodi v grafu in seznamu na /statistika.
   const boja = bojeKodova(idjevi).get(kod.id)?.boja ?? "#ea580c";
 
   const imaStatistiku = mjeren || ukupno.skeniranja > 0;
-  const prikaz = trazeniPrikaz === "uredi" || !imaStatistiku ? "uredi" : "statistika";
+  const prikaz = jeDugme ? "statistika" : trazeniPrikaz === "uredi" || !imaStatistiku ? "uredi" : "statistika";
   const urlStatistike = `/statistika/${kod.id}${r ? `?raspon=${raspon.kljuc}` : ""}`;
-  const urlUredjivanja = `/statistika/${kod.id}?prikaz=uredi`;
+  const urlUredjivanja = jeDugme ? `${potStranice}?prikaz=uredi` : `/statistika/${kod.id}?prikaz=uredi`;
 
   return (
     <main className={s.sekcija} style={{ "--boja-koda": boja } as React.CSSProperties}>
       <div className={s.kontejner}>
         <Zaglavlje
-          oznaka={mjeren ? "S brojanjem" : "Direktno"}
-          vodeniZig="Kod"
+          oznaka={jeDugme ? "Dugme" : mjeren ? "S brojanjem" : "Direktno"}
+          vodeniZig={jeDugme ? "Link" : "Kod"}
           naslov={kod.naziv}
-          nazad={{ href: "/statistika", tekst: "Svi kodovi" }}
+          nazad={
+            jeDugme
+              ? { href: potStranice, tekst: "Nazad na stranicu" }
+              : { href: "/statistika", tekst: "Svi kodovi" }
+          }
         />
 
         {/* ---- Kartica koda: slika, linkovi, ukupno ---- */}
         <section className={`${s.kartica} ${p.kodKartica}`}>
-          <Link href={urlUredjivanja} className={p.kodKarticaSlika} aria-label="Uredi i preuzmi QR kod" scroll={false}>
+          <Link
+            href={urlUredjivanja}
+            className={p.kodKarticaSlika}
+            aria-label={jeDugme ? "Uredi dugme" : "Uredi i preuzmi QR kod"}
+            scroll={false}
+          >
             <QrSlicica podaci={mjeren ? kratkiLink : kod.cilj} stil={stil} velicina={112} />
           </Link>
 
@@ -283,9 +319,15 @@ export default async function KodPage({
             <div className={p.linkRed}>
               <span className={p.linkOznaka}>Odredište</span>
               <span className={p.linkVrijednost}>
-                <a href={kod.cilj} target="_blank" rel="noreferrer" className={`${s.kodLinkVeliki} ${p.linkTekst}`}>
-                  {kod.cilj}
-                </a>
+                {/* "interno:/meni" ni naslov, ampak navodilo — pokažemo ime strani,
+                    ker bi povezava s to shemo vodila v prazno. */}
+                {jeInterno(kod.cilj) ? (
+                  <span className={s.kodLinkVeliki}>{nazivInterne(kod.cilj)} — po jeziku gosta</span>
+                ) : (
+                  <a href={kod.cilj} target="_blank" rel="noreferrer" className={`${s.kodLinkVeliki} ${p.linkTekst}`}>
+                    {kod.cilj}
+                  </a>
+                )}
               </span>
             </div>
             {kod.biljeska && (
@@ -299,7 +341,7 @@ export default async function KodPage({
           {imaStatistiku && (
             <div className={p.kodKarticaBrojke}>
               <span className={p.velikiBroj}>{broj(ukupno.skeniranja)}</span>
-              <span className={s.kpiOznaka}>skeniranja ukupno</span>
+              <span className={s.kpiOznaka}>{jeDugme ? "klikova ukupno" : "skeniranja ukupno"}</span>
               <span className={s.kpiDodatak} title={datumVrijeme(ukupno.zadnje)}>
                 zadnje {relativno(ukupno.zadnje)}
               </span>
@@ -325,7 +367,7 @@ export default async function KodPage({
             aria-current={prikaz === "uredi" ? "page" : undefined}
             scroll={false}
           >
-            Uredi i preuzmi
+            {jeDugme ? "Uredi dugme" : "Uredi i preuzmi"}
           </Link>
           {prikaz === "statistika" && (
             <span className={p.karticeDesno}>
@@ -344,7 +386,7 @@ export default async function KodPage({
                 vremena dok je bio s brojanjem.
               </p>
             )}
-            <Statistika kodId={kod.id} naziv={kod.naziv} raspon={raspon} />
+            <Statistika kodId={kod.id} naziv={kod.naziv} raspon={raspon} jeDugme={jeDugme} />
           </>
         ) : (
           <>
@@ -366,7 +408,9 @@ export default async function KodPage({
                 aktivan: kod.aktivan,
                 biljeska: kod.biljeska,
                 stil,
+                vodiNa: kod.vodi_na,
               }}
+              stranice={stranice}
             />
 
             <section className={`${s.kartica} ${p.opasnaZona}`}>

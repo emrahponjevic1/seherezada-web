@@ -1,0 +1,556 @@
+/* ---------------------------------------------------------------------------
+   STRAN S POVEZAVAMI — ZA GOSTA ZA MIZO
+
+   Barvno ozadje z belim vodnim žigom, prozoren logotip, bele kartice z
+   ikono levo in temnim krogcem s puščico desno.
+
+   Telefon je glavni zaslon, a stran mora biti spodobna tudi na tablici in
+   računalniku: isti en stolpec, le bolj zračen in z večjo pisavo.
+
+   Gumbi so vedno EDEN POD DRUGIM. Dva v isti vrstici bi na majhnem zaslonu
+   pomenila dva majhna cilja in gost bi zgrešil.
+
+   Spremenljivke od zunaj:
+     --gore, --dolje   barvi preliva ozadja (barva strani)
+     --boja-ikone      barva ikone in krogca na posameznem gumbu
+   --------------------------------------------------------------------------- */
+
+.telo {
+  min-height: 100dvh;
+  /*
+    Čist preliv, brez vzorca.
+
+    Prva različica je imela čez ozadje bel vodni žig s hrano. Videti je bil
+    lep, a je logotip in napise pod njim delal motne — drobne bele črte so
+    tekle tik ob belih črtah logotipa in oko ni vedelo, kaj je kaj. Lastnik ga
+    je zato odstranil. Če se kdaj vrne, mora biti precej bolj prosojen in
+    daleč od glave strani.
+
+    Sij na vrhu ostane: nosi pogled proti logotipu, a nima roba, ki bi motil.
+  */
+  background-image:
+    radial-gradient(34rem 22rem at 50% 4%, rgba(255, 255, 255, 0.18), transparent 70%),
+    linear-gradient(168deg, var(--gore) 0%, var(--dolje) 100%);
+  background-repeat: no-repeat, no-repeat;
+  background-size: 100% 100%, 100% 100%;
+  /* background-attachment: fixed je bil odstranjen namerno: telefon mora ob
+     vsakem drsenju znova narisati celo ozadje, kar se vidi kot trzanje. iOS
+     ga tako ali tako ne izriše pravilno. */
+  color: #fff;
+  font-family: var(--font-family);
+  display: flex;
+  justify-content: center;
+}
+
+/*
+  RAZPORED PO VIŠINI
+
+  Okvir je vedno visok vsaj cel zaslon. Glava in gumbi dobijo margin-top: auto
+  in plavajo na sredini, podnožje pa ga dobi tudi in zato pristane na dnu
+  zaslona — ne tik pod zadnjim gumbom.
+
+  Kadar je gumbov toliko, da vsebina preseže zaslon, se samodejna margina
+  sesede na nič in stran se normalno drsi; podnožje takrat pride za gumbi.
+*/
+.okvir {
+  width: 100%;
+  max-width: 27rem;
+  min-height: 100dvh;
+  /* Spodaj env(): odkar je podnožje pripeto na dno, bi ga na iPhonu prekrila
+     črtica za domov. Brez pripetega podnožja to ni bilo pomembno. */
+  padding: 1.1rem 1.15rem max(2.5rem, calc(env(safe-area-inset-bottom) + 1.5rem));
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ---- Prekidač jezika ---- */
+
+.jezici {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+.jezik {
+  font: inherit;
+  cursor: pointer;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.72);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 99px;
+  padding: 0.28rem 0.58rem;
+  text-decoration: none;
+  min-height: 1.9rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.jezik:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.jezikAktivan {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
+/* ---- Glava ---- */
+
+.glava {
+  /* Skupaj z margin-top: auto na podnožju potisne glavo in gumbe na sredino. */
+  margin-top: auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.logo {
+  width: 66%;
+  max-width: 14rem;
+  height: auto;
+  /* Zrak nad in pod znakom; brez njega se logotip drži napisa pod sabo.
+     Spodaj 1.25rem = 20 px, na željo lastnika. */
+  margin: 0.75rem 0 1.25rem;
+  /*
+    Tu je bil filter: drop-shadow. Odstranjen je zaradi hitrosti: senca na
+    sliki z alfo se preračuna ob vsakem izrisu in je na telefonu eden od
+    dražjih učinkov. Preliv je pod logotipom dovolj temen, da bel znak stoji
+    tudi brez nje.
+  */
+}
+
+.naslov {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+/* "FAST FOOD & GRILL" s tanko črto na vsaki strani. */
+.podnaslov {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  width: 100%;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.podnaslov::before,
+.podnaslov::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.pozdrav {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.88);
+  max-width: 22rem;
+}
+
+/* ---- Značka Otvoreno / Zatvoreno ---- */
+
+.znacka {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  /* Do izračuna v brskalniku zavzame prostor, a je nevidna — postavitev ne poskoči. */
+  min-height: 1.5rem;
+}
+
+.znackaPrazna {
+  visibility: hidden;
+}
+
+.tackaZiva {
+  position: relative;
+  width: 0.55rem;
+  height: 0.55rem;
+  color: #4ade80;
+}
+
+.znackaZatvoreno .tackaZiva {
+  color: #fca5a5;
+}
+
+.tacka {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.puls {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.5;
+  animation: puls 2s ease-out infinite;
+}
+
+@keyframes puls {
+  0% { transform: scale(1); opacity: 0.5; }
+  70% { transform: scale(2.4); opacity: 0; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .puls { animation: none; }
+}
+
+.znackaDodatak {
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  opacity: 0.92;
+}
+
+/* ---- Gumbi ---- */
+
+.dugmad {
+  list-style: none;
+  margin: 0.25rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.dugme {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  width: 100%;
+  /* 4rem je tudi pri največji pisavi nad 44 px, kolikor mora meriti cilj za prst. */
+  min-height: 4rem;
+  padding: 0.7rem 0.75rem 0.7rem 1rem;
+  background: #fff;
+  color: #1c1917;
+  border: 0;
+  border-radius: 22px;
+  box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.35);
+  text-decoration: none;
+  font: inherit;
+  text-align: left;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.dugme:active {
+  transform: scale(0.985);
+}
+
+@media (hover: hover) {
+  .dugme:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 28px -10px rgba(0, 0, 0, 0.45);
+  }
+}
+
+.dugme:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+}
+
+.ikonaOkvir {
+  flex: none;
+  width: 2.5rem;
+  display: grid;
+  place-items: center;
+  color: var(--boja-ikone);
+}
+
+.emoji {
+  line-height: 1;
+}
+
+.natpisi {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.natpis {
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.podnatpis {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #78716c;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.strelica {
+  flex: none;
+  width: 2.15rem;
+  height: 2.15rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--boja-ikone);
+  color: #fff;
+}
+
+/* ---- Podnožje ---- */
+
+.podnozje {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  /* Na dno zaslona. Padding drži najmanjši razmik, kadar je gumbov toliko,
+     da samodejna margina odpade. */
+  margin-top: auto;
+  padding-top: 1.75rem;
+}
+
+/*
+  SLOGAN — EDINO MESTO Z DRUGO PISAVO
+
+  CLAUDE.md sicer dovoljuje samo Plus Jakarta Sans. Lastnik je za ta en napis
+  izrecno odobril izjemo (rokopisna pisava s predloge). Velja SAMO tukaj;
+  povsod drugod ostane pravilo nedotaknjeno.
+*/
+.slogan {
+  font-family: var(--font-caveat), var(--font-family);
+  font-size: 1.45rem;
+  line-height: 1.15;
+  color: #fff;
+  white-space: pre-line;
+  max-width: 20rem;
+}
+
+/* ——— globus seherezada.net ——— */
+.domenaRed {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+}
+
+.domenaRed::before,
+.domenaRed::after {
+  content: "";
+  /* Stalna dolžina, ne flex: 1 — črtici sta okrasek ob naslovu, ne črta čez
+     vso stran, kakršna je nad napisom FAST FOOD & GRILL. */
+  flex: 0 0 3.25rem;
+  height: 2px;
+  border-radius: 2px;
+  background: #1c1917;
+  /*
+    Optična poravnava: geometrično so črtici, globus in besedilo na isti
+    višini (izmerjeno 763,5 px), a sredina MALIH črk je 1,5 px nižje (765).
+    Oko bere besedilo po malih črkah, zato so bile črtici videti za las
+    previsoko. Globus je premaknjen enako.
+  */
+  transform: translateY(1.5px);
+}
+
+.domena {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  /*
+    Nevidni prostor desno, širok natanko kot globus z razmikom levo.
+
+    Brez njega se na sredino postavi par "globus + naslov", besedilo samo pa
+    je bilo izmerjeno 10,5 px desno od sredine zaslona — oko črtici meri od
+    besedila, zato je bilo videti postrani. Zdaj je na sredini besedilo,
+    obe črtici sta od njega enako oddaljeni, globus pa sedi v levem razmiku.
+  */
+  padding-right: calc(15px + 0.4rem);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.globus {
+  display: inline-flex;
+  color: #1c1917;
+  /* Enako kot črtici — glej zgoraj. */
+  transform: translateY(1.5px);
+}
+
+.prazno {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.9rem;
+  padding: 1.5rem 0;
+}
+
+/* ---------------------------------------------------------------------------
+   VEČJI ZASLONI
+
+   Stolpec ostane en sam in na sredini — gumbi se nikoli ne razporedijo v dve
+   koloni. Spremeni se le zračnost.
+   --------------------------------------------------------------------------- */
+
+@media (min-width: 640px) {
+  .okvir {
+    max-width: 30rem;
+    padding: 2.25rem 1.5rem 2.5rem;
+    gap: 1.15rem;
+  }
+
+  .naslov {
+    font-size: 1.05rem;
+  }
+
+  .podnaslov {
+    font-size: 0.85rem;
+  }
+
+  .dugme {
+    min-height: 4.5rem;
+    padding: 0.8rem 0.85rem 0.8rem 1.15rem;
+  }
+
+  .natpis {
+    font-size: 1.15rem;
+  }
+
+  .podnatpis {
+    font-size: 0.72rem;
+  }
+
+  .strelica {
+    width: 2.35rem;
+    height: 2.35rem;
+  }
+
+  .slogan {
+    font-size: 1.65rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .okvir {
+    max-width: 32rem;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   PREDOGLED V NADZORNI PLOŠČI
+
+   Ista komponenta kot javna stran, le stisnjena v okvir telefona. Lastnik
+   tako vidi točno to, kar bo videl gost, ne približka.
+   --------------------------------------------------------------------------- */
+
+.uPregledu {
+  min-height: 0;
+  border-radius: 28px;
+  /* fixed bi preliv v predogledu pripel na okno brskalnika, ne na okvir. */
+  background-attachment: scroll, scroll;
+}
+
+.uPregledu .okvir {
+  max-width: none;
+  /* Predogled se ravna po vsebini, ne po višini okna. */
+  min-height: 0;
+  padding: 1rem 0.9rem 1.75rem;
+  gap: 0.85rem;
+}
+
+.uPregledu .glava {
+  margin-top: 0;
+}
+
+.uPregledu .podnozje {
+  margin-top: 0;
+  padding-top: 1.25rem;
+}
+
+.uPregledu .logo {
+  width: 72%;
+}
+
+.uPregledu .podnaslov {
+  font-size: 0.66rem;
+  letter-spacing: 0.22em;
+}
+
+.uPregledu .dugme {
+  min-height: 3.5rem;
+  border-radius: 18px;
+  padding: 0.6rem 0.6rem 0.6rem 0.8rem;
+  gap: 0.6rem;
+}
+
+.uPregledu .ikonaOkvir {
+  width: 2rem;
+}
+
+.uPregledu .natpis {
+  font-size: 0.92rem;
+}
+
+.uPregledu .podnatpis {
+  font-size: 0.62rem;
+}
+
+.uPregledu .strelica {
+  width: 1.8rem;
+  height: 1.8rem;
+}
+
+.uPregledu .slogan {
+  font-size: 1.2rem;
+}
+
+/*
+  NASLOV ZA BRALNIKE ZASLONA
+
+  Ime je na strani samo v sliki logotipa, zato stran brez tega nima nobenega
+  naslova — slepemu gostu se predstavi kot "Šeherezada" šele iz naslova zavihka.
+  h1 je tu vedno; kadar lastnik svojega naslova ne napiše, je viden samo
+  bralnikom.
+*/
+.skrivenNaslov {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

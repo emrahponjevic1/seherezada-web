@@ -80,6 +80,26 @@ const nextConfig: NextConfig = {
           { key: "Referrer-Policy", value: "no-referrer" },
         ],
       },
+
+      /**
+       * STRANI S POVEZAVAMI — NE V ISKALNIK, A POVEZAVAM SLEDI
+       *
+       * Vsebina podvaja prave strani spletišča (meni, lokacije, ocene). Če bi
+       * jo Google indeksiral, bi si stran s povezavami in prave strani med
+       * seboj jemale mesto v zadetkih.
+       *
+       * "follow" je namerno: pajek naj povezave vseeno prehodi. Referrer tu
+       * tudi ne skrivamo — Instagramu in TripAdvisorju je prav, da vidita, da
+       * je gost prišel z naše strani.
+       */
+      {
+        source: "/links",
+        headers: [{ key: "X-Robots-Tag", value: "noindex, follow" }],
+      },
+      {
+        source: "/links/:path*",
+        headers: [{ key: "X-Robots-Tag", value: "noindex, follow" }],
+      },
     ];
   },
 };

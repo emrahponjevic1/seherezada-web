@@ -14,28 +14,52 @@ const TZ = "Europe/Ljubljana";
 
 type Sql = ReturnType<typeof baza>;
 
-function uslov(sql: Sql, kodId: number | null, raspon: Raspon) {
-  const kod = kodId === null ? sql`true` : sql`s.kod_id = ${kodId}`;
-  const od =
-    raspon.dani === null
-      ? sql`true`
-      : sql`s.vrijeme >= ((date_trunc('day', now() at time zone ${TZ}) - make_interval(days => ${
-          raspon.dani - 1
-        })) at time zone ${TZ})`;
-  return sql`not s.bot and ${kod} and ${od}`;
+/**
+ * KATERA SKENIRANJA ŠTEJEMO
+ *
+ * Odkar so gumbi na straneh s povezavami tudi vrstice v qr_kodovi, "vse"
+ * ni več enoznačno: brez razlikovanja bi glavne številke na /statistika tiho
+ * začele šteti še klike na gumbe.
+ *
+ *   "kodovi"          samo prave QR kode (gumbi imajo stranica_id)
+ *   { kod: 7 }        ena koda ALI en gumb
+ *   { stranica: 3 }   vsi kliki na gumbe ene strani s povezavami
+ */
+export type Opseg = "kodovi" | { kod: number } | { stranica: number };
+
+function pripada(sql: Sql, opseg: Opseg) {
+  if (opseg === "kodovi") {
+    return sql`exists (select 1 from qr_kodovi k where k.id = s.kod_id and k.stranica_id is null)`;
+  }
+  if ("kod" in opseg) return sql`s.kod_id = ${opseg.kod}`;
+  return sql`exists (select 1 from qr_kodovi k where k.id = s.kod_id and k.stranica_id = ${opseg.stranica})`;
+}
+
+function uObdobju(sql: Sql, raspon: Raspon) {
+  return raspon.dani === null
+    ? sql`true`
+    : sql`s.vrijeme >= ((date_trunc('day', now() at time zone ${TZ}) - make_interval(days => ${
+        raspon.dani - 1
+      })) at time zone ${TZ})`;
+}
+
+function uslov(sql: Sql, opseg: Opseg, raspon: Raspon) {
+  return sql`not s.bot and ${pripada(sql, opseg)} and ${uObdobju(sql, raspon)}`;
 }
 
 export type KodSaBrojem = QrKod & { u_rasponu: number; ukupno: number; zadnje: Date | null };
 
+/** Prave QR kode. Gumbi strani s povezavami se tu namenoma ne pokažejo. */
 export async function sviKodovi(raspon: Raspon) {
   const sql = baza();
   return sql<KodSaBrojem[]>`
     select k.*,
-      count(s.id) filter (where ${uslov(sql, null, raspon)})::int as u_rasponu,
+      count(s.id) filter (where not s.bot and ${uObdobju(sql, raspon)})::int as u_rasponu,
       count(s.id) filter (where not s.bot)::int as ukupno,
       max(s.vrijeme) filter (where not s.bot) as zadnje
     from qr_kodovi k
     left join qr_skeniranja s on s.kod_id = k.id
+    where k.stranica_id is null
     group by k.id
     order by k.kreiran desc`;
 }
@@ -46,14 +70,18 @@ export async function jedanKod(id: number) {
   return kod ?? null;
 }
 
-/** Id-ji vseh kod — za barvo kode, ki se dodeli po vrstnem redu nastanka. */
+/**
+ * Id-ji pravih kod — za barvo, ki se dodeli po vrstnem redu nastanka.
+ * Gumbi so izpuščeni: sicer bi kode zaradi njih padle v sivo "Ostali".
+ */
 export async function idjeviKodova() {
   const sql = baza();
-  const redovi = await sql<{ id: number }[]>`select id from qr_kodovi order by id`;
+  const redovi = await sql<{ id: number }[]>`
+    select id from qr_kodovi where stranica_id is null order by id`;
   return redovi.map((r) => r.id);
 }
 
-export async function brojke(kodId: number | null, raspon: Raspon) {
+export async function brojke(opseg: Opseg, raspon: Raspon) {
   const sql = baza();
   const [r] = await sql<
     { skeniranja: number; jedinstveni: number; boti: number; zadnje: Date | null; prvo: Date | null }[]
@@ -65,14 +93,7 @@ export async function brojke(kodId: number | null, raspon: Raspon) {
       max(s.vrijeme) filter (where not s.bot) as zadnje,
       min(s.vrijeme) filter (where not s.bot) as prvo
     from qr_skeniranja s
-    where ${kodId === null ? sql`true` : sql`s.kod_id = ${kodId}`}
-      and ${
-        raspon.dani === null
-          ? sql`true`
-          : sql`s.vrijeme >= ((date_trunc('day', now() at time zone ${TZ}) - make_interval(days => ${
-              raspon.dani - 1
-            })) at time zone ${TZ})`
-      }`;
+    where ${pripada(sql, opseg)} and ${uObdobju(sql, raspon)}`;
   return r;
 }
 
@@ -87,14 +108,13 @@ export interface Stupac {
  * Nad 120 dnevi se združi po tednih, sicer so stolpci tanjši od piksla.
  */
 /** Prvi in zadnji dan obdobja ter ali se šteje po dnevih ali po tednih. */
-async function okvirDana(kodId: number | null, raspon: Raspon) {
+async function okvirDana(opseg: Opseg, raspon: Raspon) {
   const sql = baza();
-  const kod = kodId === null ? sql`true` : sql`s.kod_id = ${kodId}`;
 
   const [{ danas, prvi }] = await sql<{ danas: string; prvi: string | null }[]>`
     select to_char((now() at time zone ${TZ})::date, 'YYYY-MM-DD') as danas,
       to_char(min((s.vrijeme at time zone ${TZ})::date), 'YYYY-MM-DD') as prvi
-    from qr_skeniranja s where not s.bot and ${kod}`;
+    from qr_skeniranja s where not s.bot and ${pripada(sql, opseg)}`;
 
   let pocetak: string;
   if (raspon.dani !== null) {
@@ -113,9 +133,9 @@ async function okvirDana(kodId: number | null, raspon: Raspon) {
  * Skeniranja po dnevih, ločeno po kodah — za naložen graf na /statistika.
  * Vrne ključe dni in za vsako kodo niz števil v istem vrstnem redu.
  */
-export async function poDanimaPoKodu(raspon: Raspon) {
+export async function poDanimaPoKodu(opseg: Opseg, raspon: Raspon) {
   const sql = baza();
-  const { danas, pocetak, jedinica } = await okvirDana(null, raspon);
+  const { danas, pocetak, jedinica } = await okvirDana(opseg, raspon);
 
   const redovi = await sql<{ kljuc: string; kod_id: number | null; broj: number }[]>`
     with dani as (
@@ -128,7 +148,7 @@ export async function poDanimaPoKodu(raspon: Raspon) {
     brojevi as (
       select date_trunc(${jedinica}, s.vrijeme at time zone ${TZ})::date as dan, s.kod_id, count(*)::int as broj
       from qr_skeniranja s
-      where not s.bot
+      where not s.bot and ${pripada(sql, opseg)}
         and s.vrijeme >= (${pocetak}::date::timestamp at time zone ${TZ})
       group by 1, 2
     )
@@ -150,10 +170,10 @@ export async function poDanimaPoKodu(raspon: Raspon) {
   return { kljucevi, jedinica, poKodu };
 }
 
-export async function poDanima(kodId: number | null, raspon: Raspon) {
+export async function poDanima(opseg: Opseg, raspon: Raspon) {
   const sql = baza();
-  const kod = kodId === null ? sql`true` : sql`s.kod_id = ${kodId}`;
-  const { danas, pocetak, jedinica } = await okvirDana(kodId, raspon);
+  const kod = pripada(sql, opseg);
+  const { danas, pocetak, jedinica } = await okvirDana(opseg, raspon);
 
   const redovi = await sql<Stupac[]>`
     with dani as (
@@ -177,11 +197,11 @@ export async function poDanima(kodId: number | null, raspon: Raspon) {
   return { stupci: redovi, jedinica: jedinica as "day" | "week" };
 }
 
-export async function poSatima(kodId: number, raspon: Raspon) {
+export async function poSatima(opseg: Opseg, raspon: Raspon) {
   const sql = baza();
   const redovi = await sql<{ sat: number; broj: number }[]>`
     select extract(hour from s.vrijeme at time zone ${TZ})::int as sat, count(*)::int as broj
-    from qr_skeniranja s where ${uslov(sql, kodId, raspon)}
+    from qr_skeniranja s where ${uslov(sql, opseg, raspon)}
     group by 1`;
   return Array.from({ length: 24 }, (_, sat) => ({
     kljuc: String(sat),
@@ -189,11 +209,11 @@ export async function poSatima(kodId: number, raspon: Raspon) {
   }));
 }
 
-export async function poDanuSedmice(kodId: number, raspon: Raspon) {
+export async function poDanuSedmice(opseg: Opseg, raspon: Raspon) {
   const sql = baza();
   const redovi = await sql<{ dan: number; broj: number }[]>`
     select extract(isodow from s.vrijeme at time zone ${TZ})::int as dan, count(*)::int as broj
-    from qr_skeniranja s where ${uslov(sql, kodId, raspon)}
+    from qr_skeniranja s where ${uslov(sql, opseg, raspon)}
     group by 1`;
   return Array.from({ length: 7 }, (_, i) => ({
     kljuc: String(i + 1),
@@ -215,11 +235,11 @@ const POLJA = {
 
 export type Polje = keyof typeof POLJA;
 
-export async function raspodjela(kodId: number, raspon: Raspon, polje: Polje) {
+export async function raspodjela(opseg: Opseg, raspon: Raspon, polje: Polje) {
   const sql = baza();
   return sql<{ vrijednost: string | null; broj: number }[]>`
     select ${sql.unsafe(POLJA[polje])} as vrijednost, count(*)::int as broj
-    from qr_skeniranja s where ${uslov(sql, kodId, raspon)}
+    from qr_skeniranja s where ${uslov(sql, opseg, raspon)}
     group by 1 order by 2 desc, 1`;
 }
 

@@ -1,6 +1,7 @@
 "use server";
 
 import { baza } from "@/app/(statistika)/_qr/baza";
+import { bazniUrl } from "./bazniUrl";
 import { jePrijavljen } from "@/app/(statistika)/_qr/sesija";
 import { pripraviQrTabele, type Nacin } from "./shema";
 import { SLUG, noviSlug } from "./slug";
@@ -18,6 +19,12 @@ export interface PodaciKoda {
   id?: number;
   naziv: string;
   cilj: string;
+  /**
+   * Id strani s povezavami, na katero naj koda vodi. Kadar je postavljen,
+   * se cilj sestavi iz naslova te strani in polje cilj se prezre — tako
+   * preimenovanje strani ne pusti kode na starem naslovu.
+   */
+  vodiNa?: number | null;
   nacin: Nacin;
   slug: string;
   aktivan: boolean;
@@ -35,7 +42,21 @@ export async function sacuvajKod(p: PodaciKoda): Promise<Rezultat> {
   const naziv = String(p.naziv ?? "").trim().slice(0, 80);
   if (!naziv) return { greska: "Upiši naziv koda, npr. „Google recenzija — sto“." };
 
-  const cilj = String(p.cilj ?? "").trim();
+  // Odredište je lahko naša stran s povezavami. Takrat ga sestavimo sami iz
+  // njenega naslova, da ga lastnik ne more natipkati narobe.
+  let cilj = String(p.cilj ?? "").trim();
+  let vodiNa: number | null = null;
+  if (p.vodiNa !== undefined && p.vodiNa !== null) {
+    const idStranice = Number(p.vodiNa);
+    if (!Number.isInteger(idStranice)) return { greska: "Stranica s linkovima ne postoji." };
+    await pripraviQrTabele();
+    const [stranica] = await baza()<{ slug: string }[]>`
+      select slug from link_stranice where id = ${idStranice}`;
+    if (!stranica) return { greska: "Ta stranica s linkovima više ne postoji." };
+    vodiNa = idStranice;
+    cilj = `${bazniUrl()}/links/${stranica.slug}`;
+  }
+
   let url: URL;
   try {
     url = new URL(cilj);
@@ -66,7 +87,8 @@ export async function sacuvajKod(p: PodaciKoda): Promise<Rezultat> {
       const [r] = await sql<{ id: number }[]>`
         update qr_kodovi set
           naziv = ${naziv}, cilj = ${cilj}, nacin = ${nacin}, aktivan = ${aktivan},
-          biljeska = ${biljeska}, stil = ${sql.json(stil)}, izmijenjen = now()
+          biljeska = ${biljeska}, stil = ${sql.json(stil)}, vodi_na = ${vodiNa},
+          izmijenjen = now()
         where id = ${id}
         returning id`;
       return r ? { id: r.id } : { greska: "Kod više ne postoji." };
@@ -77,8 +99,8 @@ export async function sacuvajKod(p: PodaciKoda): Promise<Rezultat> {
       return { greska: "Kratki link smije imati samo mala slova, brojeve i crtice (2–40 znakova)." };
     }
     const [r] = await sql<{ id: number }[]>`
-      insert into qr_kodovi (slug, naziv, cilj, nacin, aktivan, biljeska, stil)
-      values (${slug}, ${naziv}, ${cilj}, ${nacin}, ${aktivan}, ${biljeska}, ${sql.json(stil)})
+      insert into qr_kodovi (slug, naziv, cilj, nacin, aktivan, biljeska, stil, vodi_na)
+      values (${slug}, ${naziv}, ${cilj}, ${nacin}, ${aktivan}, ${biljeska}, ${sql.json(stil)}, ${vodiNa})
       returning id`;
     return { id: r.id };
   } catch (e) {

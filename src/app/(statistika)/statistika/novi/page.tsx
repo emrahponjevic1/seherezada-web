@@ -8,6 +8,7 @@ import { imaBazu } from "@/app/(statistika)/_qr/baza";
 import { pripraviQrTabele } from "@/app/(statistika)/_qr/shema";
 import { jePrijavljen } from "@/app/(statistika)/_qr/sesija";
 import { noviSlug } from "@/app/(statistika)/_qr/slug";
+import { popisStranica } from "@/app/(statistika)/_linkovi/upiti";
 
 export const metadata = { title: "Novi kod" };
 
@@ -15,6 +16,8 @@ export default async function NoviKodPage() {
   if (!(await jePrijavljen())) return <Prijava />;
   if (!imaBazu()) return <NemaBaze />;
   await pripraviQrTabele();
+  // Seznam strani s povezavami, da lastnik odredište izbere, namesto da ga tipka.
+  const stranice = await popisStranica();
 
   return (
     <main className={s.sekcija}>
@@ -23,11 +26,11 @@ export default async function NoviKodPage() {
           oznaka="Novi kod"
           vodeniZig="Novi"
           naslov="Kreiraj QR kod"
-          podnaslov="Upiši link, izaberi način i uredi izgled. Predogled desno se mijenja uživo."
+          podnaslov="Izaberi odredište, način i izgled. Predogled desno se mijenja uživo."
           nazad={{ href: "/statistika", tekst: "Svi kodovi" }}
         />
         {/* Predlog kratke povezave naredi strežnik, da se strežnik in brskalnik ne razlikujeta. */}
-        <QrDizajner bazniUrl={bazniUrl()} predlozeniSlug={noviSlug()} />
+        <QrDizajner bazniUrl={bazniUrl()} predlozeniSlug={noviSlug()} stranice={stranice} />
       </div>
     </main>
   );
