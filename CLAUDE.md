@@ -3,6 +3,13 @@
 ## 1. Typography Consistency (STRICT RULE)
 - **Single Universal Font**: **`Plus Jakarta Sans`** (`var(--font-jakarta)` / `font-family: inherit`).
 - **NO other fonts allowed** under any circumstances across any section or component.
+- **One approved exception (owner-approved, 18 Sep 2026)**: the handwritten slogan at the
+  bottom of the linktree page `/links/<slug>` uses **`Caveat`** (`var(--font-caveat)`).
+  It is defined once in `src/app/(statistika)/_linkovi/pisava.ts` and used in exactly two
+  places: the guest page (`links/layout.tsx`) and the live preview of that same page in the
+  admin editor (scoped to the phone frame only). It applies to that single line and never
+  reaches the public multilingual site. Any further exception needs the same
+  explicit approval — this one does not open the door.
 - All titles, subtitles, body text, buttons, badges, cards, navigation items, prices, and food descriptions MUST inherit and use `Plus Jakarta Sans`.
 - Weights used: `400` (Regular), `500` (Medium), `600` (Semi-bold), `700` (Bold), `800` (Extra Bold), `900`/`950` (Black/Heavy).
 
