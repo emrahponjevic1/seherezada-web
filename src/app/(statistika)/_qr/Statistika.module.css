@@ -1,13 +1,23 @@
 /* ---------------------------------------------------------------------------
-   /statistika — notranja stran za QR kode
-   Ista pisava, barve in odmiki kot javno spletišče (CLAUDE.md).
+   NADZORNA PLOŠČA — osnovni gradniki (gumbi, kartice, obrazci, številke)
+
+   Druga različica, 18. 9. 2026: plošča je dobila bočni meni (Okvir.module.css)
+   in čistejši videz aplikacije. Uredniški vzorec z vodnim žigom in oznako
+   poglavja je odstranjen — v aplikaciji je bil hrup.
+
+   Pisava, barve in radiji iz CLAUDE.md. Vodoravni in navpični odmiki sekcije
+   po pravilu iz CLAUDE.md (2 / 1,5 / 1,25 rem; 5 / 4 / 3,5 rem).
+
+   Pravila za grafe (.grafikon*, .mreza, .os, .stupac, .tooltip ...) so iz
+   prve različice nespremenjena: grafi so preverjeni in delujejo.
    --------------------------------------------------------------------------- */
 
 /* globals.css da body overflow-x: hidden, s čimer body postane lasten
-   drsni vsebnik in position: sticky ne deluje (predogled kode je odšel z
+   drsni vsebnik in position: sticky ne deluje (predogled bi odšel z
    zaslona). html še vedno prepreči vodoravno drsenje. */
 .tijelo {
   overflow: visible;
+  background: #fffcf8;
 }
 
 .sekcija {
@@ -16,7 +26,6 @@
   position: relative;
   padding: 5rem 2rem 5.5rem;
   min-height: 100vh;
-  background: #fffcf8;
   color: #1c1917;
   font-family: inherit;
 }
@@ -31,107 +40,88 @@
   gap: 1.5rem;
 }
 
-/* ---- Glava (uredniški vzorec) ---- */
+/* ---- Glava strani ---- */
 
 .glava {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 1.5rem;
+  gap: 1rem 1.5rem;
   flex-wrap: wrap;
-  margin-bottom: 0.5rem;
 }
 
 .glavaTekst {
   min-width: 0;
-  flex: 1 1 520px;
+  flex: 1 1 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
 }
 
 .glavaRadnje {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.6rem;
   flex-wrap: wrap;
   align-items: center;
 }
 
 .nazad {
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   width: fit-content;
-  font-size: 0.9rem;
+  margin-bottom: 0.6rem;
+  padding: 0.35rem 0.75rem 0.35rem 0.55rem;
+  border-radius: 99px;
+  background: #fff;
+  border: 1px solid #f2ede4;
+  font-size: 0.8rem;
   font-weight: 700;
   color: #78716c;
-  /* Vodni žig pod povezavo sega višje od oznake — brez tega se prekrivata. */
-  margin-bottom: 2.25rem;
+  text-decoration: none;
 }
 .nazad:hover {
-  color: #ea580c;
+  color: #c2410c;
+  border-color: #fed7aa;
 }
 
-.chapterTagContainer {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.tagGhostWatermark {
-  position: absolute;
-  left: -0.25rem;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 3.4rem;
-  font-weight: 950;
-  color: #1c1917;
-  opacity: 0.055;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  user-select: none;
-  pointer-events: none;
-  line-height: 1;
-  white-space: nowrap;
-}
-
-.chapterIndexTag {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  font-size: 0.82rem;
-  font-weight: 800;
-  color: #ea580c;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
+/* Ostanki uredniškega vzorca: ne izrisujejo se več. */
+.chapterTagContainer,
+.tagGhostWatermark,
+.chapterIndexTag,
 .chapterDash {
-  width: 18px;
-  height: 1.5px;
-  background: #ea580c;
-  opacity: 0.6;
+  display: none;
 }
 
 .naslov {
   color: #1c1917;
-  font-weight: 950;
-  letter-spacing: -0.03em;
-  line-height: 1.1;
-  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
   overflow-wrap: anywhere;
 }
 
 .podnaslov {
-  color: #57534e;
-  font-size: 1.05rem;
-  line-height: 1.6;
-  margin-top: 0.75rem;
+  color: #78716c;
+  font-size: 0.97rem;
+  line-height: 1.55;
   overflow-wrap: anywhere;
 }
 
+.glavaMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem 0.6rem;
+  flex-wrap: wrap;
+  margin-top: 0.2rem;
+}
+
 .podnaslovSekcije {
-  font-size: 1.35rem;
+  font-size: 1.1rem;
   font-weight: 800;
-  letter-spacing: -0.02em;
-  margin-top: 1.5rem;
+  letter-spacing: -0.015em;
+  margin-top: 0.75rem;
 }
 
 /* ---- Gumbi ---- */
@@ -142,15 +132,16 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
+  gap: 0.45rem;
+  min-height: 44px;
   font-family: inherit;
   font-weight: 700;
-  font-size: 0.95rem;
-  border-radius: 99px;
-  padding: 0.75rem 1.4rem;
+  font-size: 0.92rem;
+  border-radius: 14px;
+  padding: 0.6rem 1.15rem;
   cursor: pointer;
   border: 1px solid transparent;
-  transition: background 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s, transform 0.15s;
   white-space: nowrap;
   text-decoration: none;
 }
@@ -158,10 +149,13 @@
 .dugme {
   background: #ea580c;
   color: #fff;
-  box-shadow: 0 8px 20px -8px rgba(234, 88, 12, 0.55);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.25) inset, 0 6px 16px -6px rgba(234, 88, 12, 0.6);
 }
 .dugme:hover {
   background: #c2410c;
+}
+.dugme:active {
+  transform: translateY(1px);
 }
 .dugme:disabled {
   opacity: 0.6;
@@ -171,12 +165,11 @@
 .dugmeSporedno {
   background: #fff;
   color: #1c1917;
-  border-color: #f2ede4;
-  padding: 0.6rem 1.1rem;
-  font-size: 0.9rem;
+  border-color: #e7e0d4;
+  box-shadow: 0 1px 2px rgba(28, 25, 23, 0.04);
 }
 .dugmeSporedno:hover {
-  border-color: #fed7aa;
+  border-color: #fdba74;
   color: #c2410c;
 }
 
@@ -184,67 +177,84 @@
   background: #fff;
   color: #b91c1c;
   border-color: #fecaca;
-  padding: 0.6rem 1.1rem;
-  font-size: 0.9rem;
 }
 .dugmeOpasno:hover {
   background: #fef2f2;
 }
 
-/* ---- Filter obdobja ---- */
+/* ---- Filter obdobja: segmentni izbirnik ---- */
 
 .filteri {
-  display: flex;
+  display: inline-flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 14px;
+  background: #f4eee5;
+  width: fit-content;
 }
 
 .filter {
-  font-size: 0.9rem;
+  font-size: 0.84rem;
   font-weight: 700;
-  padding: 0.5rem 1rem;
-  border-radius: 99px;
-  border: 1px solid #f2ede4;
-  background: #fff;
-  color: #57534e;
+  padding: 0.45rem 0.85rem;
+  border-radius: 10px;
+  color: #78716c;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
 }
 .filter:hover {
-  border-color: #fed7aa;
   color: #1c1917;
 }
 .filterAktivan,
 .filterAktivan:hover {
-  background: #1c1917;
-  border-color: #1c1917;
-  color: #fff;
+  background: #fff;
+  color: #1c1917;
+  box-shadow: 0 1px 2px rgba(28, 25, 23, 0.08), 0 2px 6px -2px rgba(28, 25, 23, 0.12);
 }
 
-/* ---- Kartice in številke ---- */
+/* ---- Kartice ---- */
 
 .kartica {
   background: #fff;
   border: 1px solid #f2ede4;
-  border-radius: 22px;
-  padding: 1.5rem;
+  border-radius: 20px;
+  padding: 1.4rem 1.5rem;
   min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  box-shadow: 0 1px 2px rgba(28, 25, 23, 0.03), 0 12px 32px -22px rgba(28, 25, 23, 0.22);
 }
 
 .karticaGlava {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
-  gap: 1rem;
+  align-items: center;
+  gap: 0.5rem 1rem;
   flex-wrap: wrap;
 }
 
 .karticaNaslov {
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 800;
   letter-spacing: -0.01em;
 }
+
+.karticaLinkDesno {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #c2410c;
+  text-decoration: none;
+}
+.karticaLinkDesno:hover {
+  color: #9a3412;
+}
+
+/* ---- Številke ---- */
 
 .kpiRed {
   display: grid;
@@ -253,31 +263,53 @@
 }
 
 .kpi {
+  position: relative;
   background: #fff;
   border: 1px solid #f2ede4;
-  border-radius: 22px;
-  padding: 1.25rem 1.4rem;
+  border-radius: 20px;
+  padding: 1.15rem 1.25rem 1.2rem;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.3rem;
   min-width: 0;
+  box-shadow: 0 1px 2px rgba(28, 25, 23, 0.03), 0 12px 32px -22px rgba(28, 25, 23, 0.22);
+}
+
+.kpiGlava {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.kpiIkona {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  background: #fff4ec;
+  color: #ea580c;
+  flex: none;
 }
 
 .kpiOznaka {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 700;
   color: #78716c;
 }
 
 .kpiVrijednost {
-  font-size: 2.25rem;
+  font-size: 2rem;
   font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1.1;
+  font-variant-numeric: tabular-nums;
 }
 
 .kpiVrijednost.kpiTekst {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   line-height: 1.3;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -285,8 +317,9 @@
 }
 
 .kpiDodatak {
-  font-size: 0.82rem;
-  color: #78716c;
+  font-size: 0.78rem;
+  color: #a8a29e;
+  font-weight: 600;
 }
 
 .mreza2 {
@@ -303,7 +336,7 @@
 
 .pomoc {
   display: block;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   color: #78716c;
   line-height: 1.5;
   font-weight: 500;
@@ -311,21 +344,21 @@
 
 .prazno {
   color: #78716c;
-  font-size: 0.95rem;
+  font-size: 0.93rem;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 1rem;
+  gap: 0.9rem;
 }
 
 .info,
 .upozorenje,
 .greska,
 .uspjeh {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   line-height: 1.55;
   border-radius: 14px;
-  padding: 0.8rem 1rem;
+  padding: 0.75rem 1rem;
 }
 .info {
   background: #fff7ed;
@@ -370,14 +403,16 @@
 .tabela {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
 }
 
 .tabela th {
   text-align: left;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  color: #78716c;
+  color: #a8a29e;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
   padding: 0.6rem 0.75rem;
   border-bottom: 1px solid #f2ede4;
   white-space: nowrap;
@@ -442,34 +477,42 @@
   text-underline-offset: 3px;
 }
 
+/* ---- Oznake (čipi) ---- */
+
 .cip {
-  display: inline-block;
-  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  padding: 0.2rem 0.55rem;
-  border-radius: 12px;
+  padding: 0.22rem 0.6rem;
+  border-radius: 99px;
   white-space: nowrap;
-  margin: 0.1rem 0.35rem 0.1rem 0;
   vertical-align: middle;
+  border: 1px solid transparent;
 }
 .cipMjeren {
   background: #ecfdf5;
-  border: 1px solid #a7f3d0;
+  border-color: #a7f3d0;
   color: #047857;
 }
 .cipDirektan {
   background: #f5f5f4;
-  border: 1px solid #e7e5e4;
+  border-color: #e7e5e4;
   color: #57534e;
 }
 .cipPauziran {
   background: #fffbeb;
-  border: 1px solid #fde68a;
+  border-color: #fde68a;
   color: #92400e;
-  margin-left: 0.5rem;
+}
+.cipNaglasak {
+  background: #fff4ec;
+  border-color: #fed7aa;
+  color: #c2410c;
 }
 
-/* ---- Graf ---- */
+/* ---- Graf (nespremenjeno) ---- */
 
 .grafikon {
   display: flex;
@@ -504,7 +547,7 @@
 
 .osTekst {
   font-size: 11px;
-  fill: #78716c;
+  fill: #a8a29e;
   font-variant-numeric: tabular-nums;
 }
 
@@ -551,7 +594,7 @@
 
 .tabelaDetalji summary {
   cursor: pointer;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 700;
   color: #78716c;
   width: fit-content;
@@ -571,14 +614,14 @@
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 0.7rem;
+  gap: 0.75rem;
 }
 
 .raspodjelaRed {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 0.3rem 0.75rem;
-  font-size: 0.88rem;
+  gap: 0.35rem 0.75rem;
+  font-size: 0.87rem;
 }
 
 .raspodjelaNaziv {
@@ -594,14 +637,14 @@
 }
 .raspodjelaBroj small {
   font-weight: 500;
-  color: #78716c;
+  color: #a8a29e;
   margin-left: 0.25rem;
 }
 
 .raspodjelaTraka {
   grid-column: 1 / -1;
   height: 6px;
-  background: #f7f3ec;
+  background: #f5efe6;
   border-radius: 99px;
   overflow: hidden;
 }
@@ -610,7 +653,7 @@
   display: block;
   height: 100%;
   background: var(--boja-koda, #ea580c);
-  border-radius: 0 4px 4px 0;
+  border-radius: 99px;
 }
 
 /* ---- Prijava ---- */
@@ -620,20 +663,29 @@
   display: grid;
   place-items: center;
   padding: 3.5rem 1.25rem 4rem;
-  background: #fffcf8;
+  background:
+    radial-gradient(40rem 26rem at 50% -10%, rgba(234, 88, 12, 0.14), transparent 70%),
+    #fffcf8;
 }
 
 .prijavaKartica {
   width: 100%;
-  max-width: 440px;
+  max-width: 420px;
   background: #fff;
   border: 1px solid #f2ede4;
   border-radius: 28px;
-  padding: 2.25rem;
+  padding: 2.25rem 2rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  box-shadow: 0 10px 30px -5px rgba(28, 25, 23, 0.08);
+  box-shadow: 0 24px 60px -30px rgba(28, 25, 23, 0.35);
+}
+
+.prijavaZnak {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  margin-bottom: 0.5rem;
 }
 
 /* ---- Obrazci ---- */
@@ -646,7 +698,7 @@
 }
 
 .oznakaPolja {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 700;
   color: #57534e;
 }
@@ -655,17 +707,22 @@
   font-family: inherit;
   font-size: 0.95rem;
   color: #1c1917;
-  background: #fffdfa;
+  background: #fff;
   border: 1px solid #e7e0d4;
-  border-radius: 14px;
-  padding: 0.7rem 0.9rem;
+  border-radius: 12px;
+  padding: 0.68rem 0.85rem;
   width: 100%;
   min-width: 0;
+  min-height: 44px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.unos:hover {
+  border-color: #d6cdbf;
 }
 .unos:focus {
   outline: none;
   border-color: #ea580c;
-  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15);
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.14);
 }
 .unos:disabled {
   color: #78716c;
@@ -679,9 +736,9 @@ textarea.unos {
   width: 100%;
   height: 44px;
   border: 1px solid #e7e0d4;
-  border-radius: 14px;
+  border-radius: 12px;
   padding: 4px;
-  background: #fffdfa;
+  background: #fff;
   cursor: pointer;
 }
 .bojaPolje:disabled {
@@ -697,7 +754,7 @@ textarea.unos {
 
 .kvacica {
   display: flex;
-  gap: 0.6rem;
+  gap: 0.65rem;
   align-items: flex-start;
   font-size: 0.92rem;
   font-weight: 600;
@@ -738,31 +795,37 @@ textarea.unos {
   gap: 0.75rem;
   align-items: flex-start;
   padding: 0.9rem 1rem;
-  border: 1px solid #f2ede4;
+  border: 1px solid #ede6da;
   border-radius: 16px;
   cursor: pointer;
-  background: #fffdfa;
+  background: #fff;
+  transition: border-color 0.15s, background 0.15s;
+}
+.nacin:hover {
+  border-color: #fed7aa;
 }
 .nacin input {
   accent-color: #ea580c;
   margin-top: 0.2rem;
   flex: none;
 }
-.nacinAktivan {
+.nacinAktivan,
+.nacinAktivan:hover {
   border-color: #ea580c;
-  background: #fff7ed;
+  background: #fffaf5;
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.08);
 }
 
 .nacinNaslov {
   display: block;
   font-weight: 800;
-  font-size: 0.95rem;
+  font-size: 0.93rem;
 }
 
 .nacinOpis {
   display: block;
-  font-size: 0.85rem;
-  color: #57534e;
+  font-size: 0.83rem;
+  color: #78716c;
   line-height: 1.5;
   margin-top: 0.15rem;
 }
@@ -771,17 +834,18 @@ textarea.unos {
   display: flex;
   align-items: stretch;
   border: 1px solid #e7e0d4;
-  border-radius: 14px;
+  border-radius: 12px;
   overflow: hidden;
-  background: #fffdfa;
+  background: #fff;
 }
 .slugUnos .unos {
   border: 0;
   border-radius: 0;
+  box-shadow: none;
 }
 .slugUnos:focus-within {
   border-color: #ea580c;
-  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15);
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.14);
 }
 .slugUnos .unos:focus {
   box-shadow: none;
@@ -790,9 +854,12 @@ textarea.unos {
 .slugPrefiks {
   display: flex;
   align-items: center;
-  padding: 0 0 0 0.9rem;
-  color: #78716c;
-  font-size: 0.9rem;
+  padding: 0 0.1rem 0 0.85rem;
+  background: #faf6f0;
+  border-right: 1px solid #f2ede4;
+  padding-right: 0.7rem;
+  color: #a8a29e;
+  font-size: 0.85rem;
   white-space: nowrap;
 }
 
@@ -827,11 +894,11 @@ textarea.unos {
   text-align: center;
 }
 
-/* ---- Oblikovalnik ---- */
+/* ---- Oblikovalnik (QR koda) ---- */
 
 .dizajner {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 380px;
+  grid-template-columns: minmax(0, 1fr) 400px;
   gap: 1.5rem;
   align-items: start;
 }
@@ -843,15 +910,15 @@ textarea.unos {
   min-width: 0;
 }
 
-/* Predogled ostane viden med urejanjem: pod gornjo trako (64 px), največ
-   visok kot zaslon — če ne gre, se drsi sam zase. */
+/* Predogled ostane viden med urejanjem. Na računalniku ni več gornje trake,
+   zato je odmik od vrha majhen. */
 .dizajnerPregled {
   position: sticky;
-  top: 80px;
-  max-height: calc(100vh - 96px);
+  top: 1.5rem;
+  max-height: calc(100vh - 3rem);
   overflow-y: auto;
   scrollbar-width: thin;
-  border-radius: 22px;
+  border-radius: 24px;
 }
 
 .pregledKvadrat {
@@ -859,7 +926,7 @@ textarea.unos {
   place-items: center;
   border-radius: 18px;
   border: 1px solid #f2ede4;
-  padding: 1rem;
+  padding: 1.25rem;
   background-color: #fff;
   background-image: linear-gradient(45deg, #f7f3ec 25%, transparent 25%),
     linear-gradient(-45deg, #f7f3ec 25%, transparent 25%),
@@ -867,7 +934,7 @@ textarea.unos {
     linear-gradient(-45deg, transparent 75%, #f7f3ec 75%);
   background-size: 16px 16px;
   background-position: 0 0, 0 8px, 8px -8px, -8px 0;
-  min-height: 272px;
+  min-height: 280px;
 }
 .pregledKvadrat svg {
   display: block;
@@ -888,7 +955,7 @@ textarea.unos {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  padding-top: 0.5rem;
+  padding-top: 0.75rem;
   border-top: 1px solid #f7f3ec;
 }
 
@@ -910,6 +977,7 @@ textarea.unos {
   }
   .dizajnerPregled {
     position: static;
+    max-height: none;
   }
 }
 
@@ -925,7 +993,7 @@ textarea.unos {
     grid-template-columns: minmax(0, 1fr);
   }
   .kartica {
-    padding: 1.15rem;
+    padding: 1.1rem;
     border-radius: 18px;
   }
 
@@ -934,29 +1002,35 @@ textarea.unos {
     gap: 0.6rem;
   }
   .kpi {
-    padding: 0.9rem 1rem;
+    padding: 0.9rem 0.95rem;
     border-radius: 18px;
-    gap: 0.2rem;
+    gap: 0.15rem;
+  }
+  .kpiGlava {
+    margin-bottom: 0.2rem;
+  }
+  .kpiIkona {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
   }
   .kpiOznaka {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
   }
   .kpiVrijednost {
-    font-size: 1.6rem;
+    font-size: 1.55rem;
   }
   .kpiVrijednost.kpiTekst {
     font-size: 1rem;
   }
   .kpiDodatak {
-    font-size: 0.72rem;
+    font-size: 0.7rem;
   }
 
-  /* Obdobja v eni vrstici, ki se podrsa — namesto dveh prelomljenih vrstic. */
   .filteri {
     flex-wrap: nowrap;
     overflow-x: auto;
-    margin: 0 -1.25rem;
-    padding: 0 1.25rem 0.25rem;
+    max-width: 100%;
     scrollbar-width: none;
   }
   .filteri::-webkit-scrollbar {
@@ -974,80 +1048,6 @@ textarea.unos {
   }
 
   .prijavaKartica {
-    padding: 1.6rem;
-  }
-}
-
-/* ---- Gornja traka (samo prijavljenemu) ---- */
-
-.gornjaTraka {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  width: 100%;
-  box-sizing: border-box;
-  padding: 0 2rem;
-  background: rgba(255, 253, 250, 0.94);
-  border-bottom: 1px solid #f2ede4;
-  backdrop-filter: blur(8px);
-}
-
-.gornjaTrakaUnutra {
-  max-width: 1360px;
-  margin: 0 auto;
-  width: 100%;
-  box-sizing: border-box;
-  min-height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.gornjaZnak {
-  display: flex;
-  align-items: baseline;
-  gap: 0.6rem;
-  font-weight: 900;
-  font-size: 1.1rem;
-  letter-spacing: -0.02em;
-  color: #1c1917;
-}
-
-.gornjaZnakOpis {
-  font-size: 0.72rem;
-  font-weight: 800;
-  color: #ea580c;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.gornjaDesno {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.gornjaLink {
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: #78716c;
-}
-.gornjaLink:hover {
-  color: #ea580c;
-}
-
-@media (max-width: 1024px) {
-  .gornjaTraka {
-    padding: 0 1.5rem;
-  }
-}
-
-@media (max-width: 640px) {
-  .gornjaTraka {
-    padding: 0 1.25rem;
-  }
-  .gornjaZnakOpis {
-    display: none;
+    padding: 1.75rem 1.4rem;
   }
 }

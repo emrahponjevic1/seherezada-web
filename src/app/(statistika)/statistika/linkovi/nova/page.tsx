@@ -24,7 +24,7 @@ export default async function NovaStranicaPage() {
           vodeniZig="Link"
           naslov="Kreiraj Linktree"
           podnaslov="Jedna stranica sa svim linkovima, za jedan QR kod na stolu. Dodaj dugmad odmah — sve se sprema zajedno."
-          nazad={{ href: "/statistika", tekst: "Nazad" }}
+          nazad={{ href: "/statistika/linkovi", tekst: "Linktree" }}
         />
         {/* Predlog naslova naredi strežnik, da se strežnik in brskalnik ne razlikujeta. */}
         <Urednik bazniUrl={bazniUrl()} predlozeniSlug={noviSlug()} />

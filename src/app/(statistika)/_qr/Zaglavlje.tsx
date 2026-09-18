@@ -1,19 +1,29 @@
 import Link from "next/link";
+import { IkonaNazad } from "./IkonePanela";
 import s from "@/app/(statistika)/_qr/Statistika.module.css";
 
-/** Glava strani po uredniškem vzorcu spletišča (vodni žig + oznaka poglavja). */
+/**
+ * Glava strani nadzorne plošče: povezava nazaj, naslov, podnapis, čipi in
+ * gumbi desno.
+ *
+ * Prva različica je imela uredniški vzorec spletišča (vodni žig in oznako
+ * poglavja). V aplikaciji z bočnim menijem je bil to hrup, zato ga ni več;
+ * lastnosti `oznaka` in `vodeniZig` ostajata le zato, da stari klici ne
+ * pokajo — izrisujeta se ne.
+ */
 export default function Zaglavlje({
-  oznaka,
-  vodeniZig,
   naslov,
   podnaslov,
+  meta,
   nazad,
   children,
 }: {
-  oznaka: string;
-  vodeniZig: string;
+  oznaka?: string;
+  vodeniZig?: string;
   naslov: string;
   podnaslov?: React.ReactNode;
+  /** Čipi pod naslovom (stanje, vrsta ...). */
+  meta?: React.ReactNode;
   nazad?: { href: string; tekst: string };
   children?: React.ReactNode;
 }) {
@@ -22,21 +32,13 @@ export default function Zaglavlje({
       <div className={s.glavaTekst}>
         {nazad && (
           <Link href={nazad.href} className={s.nazad}>
-            ← {nazad.tekst}
+            <IkonaNazad velicina={15} />
+            {nazad.tekst}
           </Link>
         )}
-        <div className={s.chapterTagContainer}>
-          <span className={s.tagGhostWatermark} aria-hidden="true">
-            {vodeniZig}
-          </span>
-          <span className={s.chapterIndexTag}>
-            <span className={s.chapterDash} />
-            {oznaka}
-            <span className={s.chapterDash} />
-          </span>
-        </div>
         <h1 className={s.naslov}>{naslov}</h1>
         {podnaslov && <p className={s.podnaslov}>{podnaslov}</p>}
+        {meta && <div className={s.glavaMeta}>{meta}</div>}
       </div>
       {children && <div className={s.glavaRadnje}>{children}</div>}
     </header>

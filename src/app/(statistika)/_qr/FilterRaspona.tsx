@@ -12,6 +12,8 @@ import p from "./Stranice.module.css";
  */
 export default function FilterRaspona({ putanja, aktivan }: { putanja: string; aktivan: Raspon }) {
   const router = useRouter();
+  // Pot ima lahko že svoj parameter (?prikaz=statistika) — takrat se raspon doda z &.
+  const lociloParametra = putanja.includes("?") ? "&" : "?";
 
   return (
     <>
@@ -19,7 +21,7 @@ export default function FilterRaspona({ putanja, aktivan }: { putanja: string; a
         {RASPONI.map((r) => (
           <Link
             key={r.kljuc}
-            href={`${putanja}?raspon=${r.kljuc}`}
+            href={`${putanja}${lociloParametra}raspon=${r.kljuc}`}
             className={`${s.filter} ${r.kljuc === aktivan.kljuc ? s.filterAktivan : ""}`}
             aria-current={r.kljuc === aktivan.kljuc ? "page" : undefined}
             scroll={false}
@@ -34,7 +36,7 @@ export default function FilterRaspona({ putanja, aktivan }: { putanja: string; a
         <select
           className={s.unos}
           value={aktivan.kljuc}
-          onChange={(e) => router.push(`${putanja}?raspon=${e.target.value}`, { scroll: false })}
+          onChange={(e) => router.push(`${putanja}${lociloParametra}raspon=${e.target.value}`, { scroll: false })}
         >
           {RASPONI.map((r) => (
             <option key={r.kljuc} value={r.kljuc}>

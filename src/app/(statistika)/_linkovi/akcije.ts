@@ -61,7 +61,13 @@ export interface StranicaUnos {
   aktivna: boolean;
 }
 
-type Rezultat = { greska: string } | { id: number; slug: string };
+/**
+ * `dugmad` so id-ji shranjenih gumbov v istem vrstnem redu, kot so bili
+ * poslani. Urejevalnik jih vpiše nazaj v svoje vrstice: brez tega bi imel
+ * nov gumb po shranjevanju še vedno "brez id-ja" in bi ga naslednji Spremi
+ * izbrisal in ustvaril znova — z novo kratko povezavo in brez svojih klikov.
+ */
+type Rezultat = { greska: string } | { id: number; slug: string; dugmad: number[] };
 
 /** Naslov strani s povezavami, kakršnega dobi koda za cilj. */
 function naslovStranice(slug: string) {
@@ -172,7 +178,8 @@ export async function sacuvajLinktree(s: StranicaUnos, dugmad: DugmeUnos[]): Pro
   const sql = baza();
 
   try {
-    const { id, stariSlug } = await sql.begin(async (tx) => {
+    const { id, stariSlug, idjevi } = await sql.begin(async (tx) => {
+      const idjevi: number[] = [];
       // Glavna je lahko samo ena; staro pobrišemo prej, sicer pade indeks.
       if (polja.glavna) {
         await tx`update link_stranice set glavna = false where glavna`;
@@ -229,6 +236,7 @@ export async function sacuvajLinktree(s: StranicaUnos, dugmad: DugmeUnos[]): Pro
               naslovi = ${tx.json(d.naslovi)}, podnaslovi = ${tx.json(d.podnaslovi)},
               izmijenjen = now()
             where id = ${d.id} and stranica_id = ${id}`;
+          idjevi.push(d.id);
           continue;
         }
 
@@ -237,13 +245,15 @@ export async function sacuvajLinktree(s: StranicaUnos, dugmad: DugmeUnos[]): Pro
         let umetnut = false;
         for (let poskus = 0; poskus < 5 && !umetnut; poskus++) {
           try {
-            await tx`
+            const [nov] = await tx<{ id: number }[]>`
               insert into qr_kodovi (slug, naziv, cilj, nacin, aktivan, stil, biljeska,
                                      stranica_id, redoslijed, ikona, ikona_svg, boja, naslovi, podnaslovi)
               values (${noviSlug()}, ${d.naziv}, ${d.cilj}, 'mjeren', ${d.aktivan},
                       '{}'::jsonb, '', ${id}, ${d.redoslijed}, ${d.ikona},
                       ${d.ikonaSvg ? tx.json(d.ikonaSvg) : null}, ${d.boja},
-                      ${tx.json(d.naslovi)}, ${tx.json(d.podnaslovi)})`;
+                      ${tx.json(d.naslovi)}, ${tx.json(d.podnaslovi)})
+              returning id`;
+            idjevi.push(nov.id);
             umetnut = true;
           } catch (e) {
             if ((e as { code?: string }).code !== "23505") throw e;
@@ -259,14 +269,14 @@ export async function sacuvajLinktree(s: StranicaUnos, dugmad: DugmeUnos[]): Pro
                  where vodi_na = ${id}`;
       }
 
-      return { id, stariSlug };
+      return { id, stariSlug, idjevi };
     });
 
     revalidatePath(`/links/${polja.slug}`);
     if (stariSlug && stariSlug !== polja.slug) revalidatePath(`/links/${stariSlug}`);
     revalidatePath("/links");
 
-    return { id, slug: polja.slug };
+    return { id, slug: polja.slug, dugmad: idjevi };
   } catch (e) {
     const koda = (e as { code?: string }).code;
     const poruka = (e as Error).message;

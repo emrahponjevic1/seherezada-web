@@ -1,0 +1,448 @@
+/* ---------------------------------------------------------------------------
+   PREGLED, QR KODE, LINKTREE — seznami in kartice
+
+   Kartice kod in strani s povezavami ter "najboljši" seznami na Pregledu.
+   Osnovni gradniki (gumbi, kartica, čipi) so v Statistika.module.css.
+   --------------------------------------------------------------------------- */
+
+/* ---- Orodna vrstica nad seznamom ---- */
+
+.alati {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  flex-wrap: wrap;
+}
+
+.alatiDesno {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.pretraga {
+  position: relative;
+  min-width: 220px;
+}
+.pretraga svg {
+  position: absolute;
+  left: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #a8a29e;
+  pointer-events: none;
+}
+.pretraga input {
+  padding-left: 2.3rem;
+}
+
+/* ---- "Najboljši" seznam na Pregledu ---- */
+
+.top {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.topRed {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.3rem 0.85rem;
+  padding: 0.7rem 0.4rem;
+  border-radius: 14px;
+  color: inherit;
+  text-decoration: none;
+}
+.topRed:hover {
+  background: #fffaf5;
+}
+.top li + li .topRed {
+  border-top: 1px solid #f7f3ec;
+  border-radius: 0;
+}
+.top li + li .topRed:hover {
+  border-radius: 14px;
+  border-top-color: transparent;
+}
+
+.marker {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  background: #faf6f0;
+  color: #1c1917;
+}
+
+.markerTocka {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+}
+
+.topInfo {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.topIme {
+  font-size: 0.92rem;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.topPod {
+  font-size: 0.76rem;
+  color: #a8a29e;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.topBroj {
+  font-size: 1.05rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.topTraka {
+  grid-column: 2 / -1;
+  height: 5px;
+  border-radius: 99px;
+  background: #f5efe6;
+  overflow: hidden;
+}
+
+.topPopuna {
+  display: block;
+  height: 100%;
+  border-radius: 99px;
+  background: #ea580c;
+}
+
+/* ---- Dobrodošlica (še ni nobene kode ne strani) ---- */
+
+.zacetak {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.zacetakKartica {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1.5rem;
+  border-radius: 20px;
+  border: 1px dashed #fdba74;
+  background: #fffaf5;
+  color: inherit;
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s, transform 0.15s;
+}
+.zacetakKartica:hover {
+  background: #fff4ec;
+  border-style: solid;
+  transform: translateY(-2px);
+}
+
+.zacetakIkona {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: #ea580c;
+  color: #fff;
+}
+
+.zacetakNaslov {
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.zacetakOpis {
+  font-size: 0.87rem;
+  color: #78716c;
+  line-height: 1.5;
+}
+
+/* ---- Mreža kartic ---- */
+
+.mreza {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+/* ---- Kartica QR kode ---- */
+
+.kod {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid #f2ede4;
+  border-radius: 20px;
+  color: inherit;
+  text-decoration: none;
+  box-shadow: 0 1px 2px rgba(28, 25, 23, 0.03), 0 12px 32px -22px rgba(28, 25, 23, 0.22);
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+  overflow: hidden;
+}
+.kod:hover {
+  border-color: #fed7aa;
+  transform: translateY(-2px);
+  box-shadow: 0 1px 2px rgba(28, 25, 23, 0.03), 0 18px 36px -20px rgba(234, 88, 12, 0.35);
+}
+
+.kodVrh {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr);
+  gap: 1rem;
+  padding: 1.1rem 1.15rem 1rem;
+  align-items: center;
+}
+
+.kodSlika {
+  width: 84px;
+  height: 84px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  background: #fffcf8;
+  border: 1px solid #f2ede4;
+}
+.kodSlika > * {
+  border: 0 !important;
+  background: transparent !important;
+}
+
+.kodInfo {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.kodIme {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  min-width: 0;
+}
+.kodIme span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kodBoja {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex: none;
+}
+
+.kodCilj {
+  font-size: 0.8rem;
+  color: #78716c;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kodCipovi {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.kodDno {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid #f7f3ec;
+  background: #fffdfa;
+}
+
+.kodStat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.75rem 1.15rem;
+  min-width: 0;
+}
+.kodStat + .kodStat {
+  border-left: 1px solid #f7f3ec;
+}
+
+.kodStatBroj {
+  font-size: 1.15rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kodStatOznaka {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #a8a29e;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ---- Kartica strani s povezavami ---- */
+
+.lt {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid #f2ede4;
+  border-radius: 20px;
+  color: inherit;
+  text-decoration: none;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(28, 25, 23, 0.03), 0 12px 32px -22px rgba(28, 25, 23, 0.22);
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+.lt:hover {
+  border-color: #fed7aa;
+  transform: translateY(-2px);
+  box-shadow: 0 1px 2px rgba(28, 25, 23, 0.03), 0 18px 36px -20px rgba(234, 88, 12, 0.35);
+}
+
+/* Isti preliv kot stran za goste, da se strani ločijo na prvi pogled. */
+.ltVrh {
+  position: relative;
+  height: 108px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(168deg, var(--gore) 0%, var(--dolje) 100%);
+}
+
+.ltLogo {
+  width: 46%;
+  max-width: 130px;
+  height: auto;
+}
+
+.ltZnacke {
+  position: absolute;
+  top: 0.7rem;
+  left: 0.7rem;
+  display: flex;
+  gap: 0.3rem;
+}
+
+.ltZnacka {
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 0.2rem 0.55rem;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #1c1917;
+}
+
+.ltZnackaUgasena {
+  background: #1c1917;
+  color: #fff;
+}
+
+.ltTijelo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1rem 1.15rem 0.85rem;
+}
+
+.ltIme {
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ltAdresa {
+  font-size: 0.8rem;
+  color: #78716c;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Kartica "+ Nova" na koncu mreže. */
+.nova {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 220px;
+  border-radius: 20px;
+  border: 1.5px dashed #fdba74;
+  background: #fffaf5;
+  color: #c2410c;
+  font-size: 0.93rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.nova:hover {
+  background: #fff4ec;
+}
+.nova span:first-child {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: #ea580c;
+  color: #fff;
+}
+
+.praznoVelika {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.75rem;
+  padding: 3rem 1.5rem;
+  color: #78716c;
+}
+
+@media (max-width: 720px) {
+  .zacetak {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .mreza {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .pretraga {
+    min-width: 0;
+    flex: 1 1 100%;
+  }
+  .alatiDesno {
+    width: 100%;
+  }
+  .alatiDesno > * {
+    flex: 1 1 auto;
+  }
+}

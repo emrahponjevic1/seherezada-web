@@ -27,7 +27,7 @@ export default async function NoviKodPage() {
           vodeniZig="Novi"
           naslov="Kreiraj QR kod"
           podnaslov="Izaberi odredište, način i izgled. Predogled desno se mijenja uživo."
-          nazad={{ href: "/statistika", tekst: "Svi kodovi" }}
+          nazad={{ href: "/statistika/kodovi", tekst: "QR kodovi" }}
         />
         {/* Predlog kratke povezave naredi strežnik, da se strežnik in brskalnik ne razlikujeta. */}
         <QrDizajner bazniUrl={bazniUrl()} predlozeniSlug={noviSlug()} stranice={stranice} />

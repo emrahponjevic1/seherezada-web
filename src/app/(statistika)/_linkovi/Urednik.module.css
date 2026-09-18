@@ -1,0 +1,638 @@
+/* ---------------------------------------------------------------------------
+   UREJEVALNIK STRANI S POVEZAVAMI — po vzoru Linktree admina
+
+   Levo delovni prostor z zavihki (Dugmad · Izgled · Postavke) in lepljivo
+   vrstico s Spremi; desno telefon, ki ves čas stoji na mestu in kaže
+   natanko to, kar vidi gost.
+   --------------------------------------------------------------------------- */
+
+.urednik {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 400px;
+  gap: 2rem;
+  align-items: start;
+}
+
+.radno {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+
+/* ---- Lepljiva vrstica: zavihki + Spremi ---- */
+
+.traka {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0.75rem 0;
+  background: linear-gradient(#fffcf8 80%, rgba(255, 252, 248, 0));
+}
+
+.tabovi {
+  display: inline-flex;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 14px;
+  background: #f4eee5;
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 1rem;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #78716c;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.tab:hover {
+  color: #1c1917;
+}
+
+.tabAktivan,
+.tabAktivan:hover {
+  background: #fff;
+  color: #1c1917;
+  box-shadow: 0 1px 2px rgba(28, 25, 23, 0.08), 0 2px 6px -2px rgba(28, 25, 23, 0.12);
+}
+
+.tabBroj {
+  font-size: 0.72rem;
+  font-weight: 800;
+  min-width: 1.35rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: 99px;
+  background: #f4eee5;
+  color: #57534e;
+  text-align: center;
+}
+.tabAktivan .tabBroj {
+  background: #fff4ec;
+  color: #c2410c;
+}
+
+.trakaDesno {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.stanje {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #a8a29e;
+  white-space: nowrap;
+}
+.stanje::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.stanjeIzmjene {
+  color: #d97706;
+}
+
+.stanjeSacuvano {
+  color: #047857;
+}
+
+/* ---- Dodaj dugme ---- */
+
+.dodaj {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 52px;
+  border: 0;
+  border-radius: 16px;
+  background: #ea580c;
+  color: #fff;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.25) inset, 0 10px 22px -12px rgba(234, 88, 12, 0.7);
+  transition: background 0.15s, transform 0.15s;
+}
+.dodaj:hover {
+  background: #c2410c;
+}
+.dodaj:active {
+  transform: translateY(1px);
+}
+
+/* ---- Kartice gumbov ---- */
+
+.lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.karta {
+  background: #fff;
+  border: 1px solid #f2ede4;
+  border-radius: 18px;
+  box-shadow: 0 1px 2px rgba(28, 25, 23, 0.03), 0 10px 26px -20px rgba(28, 25, 23, 0.25);
+  transition: box-shadow 0.15s, border-color 0.15s, opacity 0.15s;
+}
+
+.kartaOtvorena {
+  border-color: #fed7aa;
+}
+
+.vuce {
+  position: relative;
+  z-index: 2;
+  border-color: #fdba74;
+  box-shadow: 0 22px 44px -18px rgba(28, 25, 23, 0.45);
+}
+
+.obrisana {
+  opacity: 0.55;
+}
+.obrisana .kartaNatpis {
+  text-decoration: line-through;
+}
+
+.kartaUgasena .kartaIkona,
+.kartaUgasena .kartaInfo {
+  opacity: 0.45;
+}
+
+.kartaGlava {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 0.75rem 0.7rem 0.4rem;
+}
+
+.rucka {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 40px;
+  flex: none;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #d6cdbf;
+  cursor: grab;
+  /* Bez tega bi telefon ob vlečenju drsel stran namesto gumba. */
+  touch-action: none;
+}
+.rucka:hover,
+.rucka:focus-visible {
+  color: #78716c;
+  background: #faf6f0;
+  outline: none;
+}
+.vuce .rucka {
+  cursor: grabbing;
+  color: #ea580c;
+}
+
+.kartaIkona {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border-radius: 12px;
+  background: #faf6f0;
+  color: #1c1917;
+}
+
+.kartaInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+  padding: 0.2rem 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+
+.kartaNatpis {
+  font-size: 0.95rem;
+  font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kartaNatpisPrazan {
+  color: #a8a29e;
+  font-weight: 700;
+}
+
+.kartaCilj {
+  font-size: 0.78rem;
+  color: #a8a29e;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kartaAlati {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex: none;
+}
+
+.alat {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #a8a29e;
+  cursor: pointer;
+}
+.alat:hover {
+  background: #faf6f0;
+  color: #1c1917;
+}
+.alatAktivan {
+  background: #fff4ec;
+  color: #c2410c;
+}
+.alatOpasan:hover {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+/* ---- Prekidač (vklop / izklop) ---- */
+
+.prekidac {
+  position: relative;
+  width: 42px;
+  height: 24px;
+  flex: none;
+  border: 0;
+  border-radius: 99px;
+  background: #e7e0d4;
+  cursor: pointer;
+  transition: background 0.15s;
+  padding: 0;
+}
+.prekidac::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(28, 25, 23, 0.25);
+  transition: transform 0.18s;
+}
+.prekidacUkljucen {
+  background: #16a34a;
+}
+.prekidacUkljucen::after {
+  transform: translateX(18px);
+}
+.prekidac:focus-visible {
+  outline: 3px solid rgba(234, 88, 12, 0.35);
+  outline-offset: 2px;
+}
+
+/* ---- Odprt urejevalnik gumba ---- */
+
+.kartaTijelo {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  padding: 1rem 1.1rem 1.2rem;
+  border-top: 1px solid #f7f3ec;
+}
+
+.odjeljak {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.odjeljakNaslov {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #a8a29e;
+}
+
+/* Vrsta cilja kot segmentni izbirnik. */
+.vrste {
+  display: flex;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 12px;
+  background: #f4eee5;
+  width: fit-content;
+  max-width: 100%;
+  flex-wrap: wrap;
+}
+
+.vrsta {
+  padding: 0.45rem 0.8rem;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #78716c;
+  cursor: pointer;
+}
+.vrsta:hover {
+  color: #1c1917;
+}
+.vrstaAktivna,
+.vrstaAktivna:hover {
+  background: #fff;
+  color: #1c1917;
+  box-shadow: 0 1px 2px rgba(28, 25, 23, 0.08);
+}
+
+.statLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  width: fit-content;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #c2410c;
+  text-decoration: none;
+}
+.statLink:hover {
+  color: #9a3412;
+}
+
+/* ---- Prazno stanje ---- */
+
+.prazno {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.5rem;
+  padding: 2.5rem 1.5rem;
+  border: 1.5px dashed #ede6da;
+  border-radius: 18px;
+  color: #78716c;
+  font-size: 0.92rem;
+}
+
+/* ---- Izgled: barve kot mali prelivi ---- */
+
+.boje {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+  gap: 0.6rem;
+}
+
+.boja {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.4rem;
+  border: 1px solid #f2ede4;
+  border-radius: 14px;
+  background: #fff;
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #57534e;
+  cursor: pointer;
+  text-align: center;
+}
+.boja:hover {
+  border-color: #fed7aa;
+}
+
+.bojaUzorak {
+  height: 44px;
+  border-radius: 10px;
+  background: linear-gradient(168deg, var(--gore) 0%, var(--dolje) 100%);
+}
+
+.bojaAktivna,
+.bojaAktivna:hover {
+  border-color: #1c1917;
+  box-shadow: 0 0 0 1px #1c1917;
+  color: #1c1917;
+}
+
+/* Barva ikone gumba — manjši krogci. */
+.krugovi {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.krug {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px #e7e0d4;
+  cursor: pointer;
+  padding: 0;
+}
+
+.krugAktivan {
+  box-shadow: 0 0 0 2px #1c1917;
+}
+
+/* ---- Postavke: vrstica s prekidačem ---- */
+
+.postavka {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 0;
+  border-top: 1px solid #f7f3ec;
+}
+.postavka:first-of-type {
+  border-top: 0;
+}
+
+.postavkaTekst {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.postavkaNaslov {
+  font-size: 0.93rem;
+  font-weight: 800;
+}
+
+.opasno {
+  border-color: #fecaca !important;
+}
+
+/* ---- Telefon ---- */
+
+.pregled {
+  position: sticky;
+  top: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Okvir telefona: temen rob, zaobljeni koti, izrez na vrhu. */
+.telefon {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  padding: 12px;
+  border-radius: 46px;
+  background: #1c1917;
+  box-shadow: 0 0 0 1px #3a3531 inset, 0 30px 60px -28px rgba(28, 25, 23, 0.55);
+}
+
+.telefonIzrez {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 92px;
+  height: 24px;
+  border-radius: 99px;
+  background: #1c1917;
+  z-index: 2;
+}
+
+.telefonEkran {
+  border-radius: 34px;
+  overflow: hidden;
+  height: min(720px, calc(100vh - 7rem));
+  overflow-y: auto;
+  scrollbar-width: none;
+  background: #fffcf8;
+}
+.telefonEkran::-webkit-scrollbar {
+  display: none;
+}
+
+/* Predogled je visok vsaj kot zaslon telefona, da podnožje sede na dno. */
+.telefonEkran > div {
+  min-height: 100%;
+}
+
+.pregledDno {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 360px;
+  font-size: 0.78rem;
+  color: #a8a29e;
+  font-weight: 600;
+}
+
+.pregledDno a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: #c2410c;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* ---- Tablica in telefon ---- */
+
+@media (max-width: 1180px) {
+  .urednik {
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .urednik {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .pregled {
+    position: static;
+    order: 2;
+  }
+  /* Na telefonu je nad trakom še gornja vrstica okvira (60 px). */
+  .traka {
+    top: 60px;
+  }
+  .telefonEkran {
+    height: 640px;
+  }
+}
+
+@media (max-width: 560px) {
+  .traka {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .tabovi {
+    width: 100%;
+  }
+  .tab {
+    flex: 1;
+    justify-content: center;
+    padding: 0.55rem 0.4rem;
+  }
+  .trakaDesno {
+    justify-content: space-between;
+  }
+  .trakaDesno button {
+    flex: 1;
+  }
+  .kartaGlava {
+    padding-right: 0.5rem;
+    gap: 0.45rem;
+  }
+  .kartaIkona {
+    width: 34px;
+    height: 34px;
+  }
+}

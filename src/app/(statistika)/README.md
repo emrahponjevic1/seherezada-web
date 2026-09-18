@@ -7,8 +7,9 @@ grupa: zagrade znače da se ime foldera ne pojavljuje u URL-u.
 (statistika)/
   _qr/                  logika kodova (prijava, baza, dizajner, grafikoni, CSS)
   _linkovi/             logika stranica s linkovima (urednik, izgled, upiti)
-  statistika/           /statistika — lista kodova, novi kod, detalji, CSV
-    linkovi/            /statistika/linkovi — kreiranje i uređivanje linktreeja
+  statistika/           /statistika — Pregled (skeniranja + klikovi), novi kod, detalji, CSV
+    kodovi/             /statistika/kodovi — svi QR kodovi kao kartice
+    linkovi/            /statistika/linkovi — sve linktree stranice, kreiranje i uređivanje
     budilica/           /statistika/budilica — dnevni poziv da Supabase ne zaspi
   links/                /links/<slug> — stranica s linkovima koju vidi gost
   q/[slug]/             kratki linkovi (seherezada.net/q/...)
@@ -25,9 +26,12 @@ stranice.
 - **Način „S brojanjem“:** QR vodi na `seherezada.net/q/<slug>`. Server pročita
   odredište iz baze, odmah preusmjeri gosta (302) i tek onda zapiše skeniranje.
 - **Način „Direktno“:** QR vodi pravo na odredište; skeniranja se ne broje.
-- **Stranica s linkovima:** na `/statistika/linkovi/nova` napraviš linktree —
-  naslov, boja, značka Otvoreno/Zatvoreno i dugmad, sve na jednom ekranu i sve
-  se sprema jednim klikom. Gost je vidi na `/links/<slug>`.
+- **Panel:** bočni meni (na telefonu tabovi na dnu) — Pregled, QR kodovi,
+  Linktree. Okvir je u `_qr/Bocnik.tsx` i `_qr/Okvir.module.css`.
+- **Stranica s linkovima:** na `/statistika/linkovi/nova` napraviš linktree.
+  Urednik (`_linkovi/Urednik.tsx`) ima tabove Dugmad / Izgled / Postavke;
+  dugmad se povlače za ručicu, a desno je telefon s pregledom uživo. Sve se
+  sprema jednim klikom. Gost je vidi na `/links/<slug>`.
 - **Statistika:** po danima, satima, danima u sedmici, državi, gradu, jeziku,
   vrsti uređaja, OS-u, pregledniku, proizvođaču i modelu; CSV izvoz.
 - **Privatnost:** IP adrese se ne spremaju (samo dnevni anonimni otisak), botovi i

@@ -283,8 +283,8 @@ export default async function KodPage({
           naslov={kod.naziv}
           nazad={
             jeDugme
-              ? { href: potStranice, tekst: "Nazad na stranicu" }
-              : { href: "/statistika", tekst: "Svi kodovi" }
+              ? { href: potStranice, tekst: "Nazad na linktree" }
+              : { href: "/statistika/kodovi", tekst: "QR kodovi" }
           }
         />
 

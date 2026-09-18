@@ -21,7 +21,7 @@ export default function ObrisiKod({ id, naziv, skeniranja }: { id: number; naziv
         alert(r.greska);
         return;
       }
-      router.push("/statistika");
+      router.push("/statistika/kodovi");
       router.refresh();
     });
   }

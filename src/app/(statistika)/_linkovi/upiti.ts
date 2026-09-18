@@ -143,3 +143,34 @@ export async function otvaranjaStranice(stranicaId: number, raspon: Raspon) {
     where s.stranica_id = ${stranicaId} and ${odKad(sql, raspon)}`;
   return r ?? { otvaranja: 0, jedinstveni: 0 };
 }
+
+export type NajDugme = {
+  id: number;
+  naziv: string;
+  ikona: string;
+  ikona_svg: LinkDugme["ikona_svg"];
+  stranica_id: number;
+  stranica: string;
+  u_rasponu: number;
+};
+
+/** Najbolj klikani gumbi čez vse strani — za Pregled. */
+export async function najDugmad(raspon: Raspon, koliko = 5) {
+  const sql = baza();
+  return sql<NajDugme[]>`
+    select k.id, k.naziv, k.ikona, k.ikona_svg, p.id as stranica_id, p.naziv as stranica,
+      count(s.id) filter (where not s.bot and ${odKad(sql, raspon)})::int as u_rasponu
+    from qr_kodovi k
+    join link_stranice p on p.id = k.stranica_id
+    left join qr_skeniranja s on s.kod_id = k.id
+    group by k.id, p.id
+    order by u_rasponu desc, k.id
+    limit ${koliko}`;
+}
+
+/** Id-ji vseh gumbov — da skupni graf loči klike od skeniranj. */
+export async function idjeviDugmadi() {
+  const sql = baza();
+  const redovi = await sql<{ id: number }[]>`select id from qr_kodovi where stranica_id is not null`;
+  return new Set(redovi.map((r) => r.id));
+}

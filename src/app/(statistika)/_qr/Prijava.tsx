@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { prijava } from "./prijavaAkcije";
 import { gesloNastavljeno } from "./sesija";
 import s from "./Statistika.module.css";
@@ -14,21 +15,12 @@ export default function Prijava({ greska }: { greska?: string }) {
   return (
     <main className={s.prijavaOkvir}>
       <form action={prijava} className={s.prijavaKartica}>
-        <div className={s.chapterTagContainer}>
-          <span className={s.tagGhostWatermark} aria-hidden="true">
-            QR
-          </span>
-          <span className={s.chapterIndexTag}>
-            <span className={s.chapterDash} />
-            Šeherezada
-            <span className={s.chapterDash} />
-          </span>
-        </div>
-        <h1 className={s.naslov}>QR statistika</h1>
+        <Image src="/images/seherezada-znak.png" alt="" width={56} height={56} className={s.prijavaZnak} />
+        <h1 className={s.naslov}>Šeherezada panel</h1>
 
         {nastavljeno ? (
           <>
-            <p className={s.podnaslov}>Unesi lozinku za pristup.</p>
+            <p className={s.podnaslov}>QR kodovi, linktree i statistika. Unesi lozinku za pristup.</p>
             <label className={s.polje}>
               <span className={s.oznakaPolja}>Lozinka</span>
               <input

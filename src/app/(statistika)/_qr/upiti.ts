@@ -22,14 +22,20 @@ type Sql = ReturnType<typeof baza>;
  * začele šteti še klike na gumbe.
  *
  *   "kodovi"          samo prave QR kode (gumbi imajo stranica_id)
+ *   "dugmad"          vsi kliki na gumbe vseh strani s povezavami
+ *   "sve"             oboje — za skupni graf na Pregledu
  *   { kod: 7 }        ena koda ALI en gumb
  *   { stranica: 3 }   vsi kliki na gumbe ene strani s povezavami
  */
-export type Opseg = "kodovi" | { kod: number } | { stranica: number };
+export type Opseg = "kodovi" | "dugmad" | "sve" | { kod: number } | { stranica: number };
 
 function pripada(sql: Sql, opseg: Opseg) {
+  if (opseg === "sve") return sql`true`;
   if (opseg === "kodovi") {
     return sql`exists (select 1 from qr_kodovi k where k.id = s.kod_id and k.stranica_id is null)`;
+  }
+  if (opseg === "dugmad") {
+    return sql`exists (select 1 from qr_kodovi k where k.id = s.kod_id and k.stranica_id is not null)`;
   }
   if ("kod" in opseg) return sql`s.kod_id = ${opseg.kod}`;
   return sql`exists (select 1 from qr_kodovi k where k.id = s.kod_id and k.stranica_id = ${opseg.stranica})`;

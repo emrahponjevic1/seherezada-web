@@ -1,0 +1,337 @@
+/* ---------------------------------------------------------------------------
+   OKVIR NADZORNE PLOŠČE
+
+   Računalnik (od 1024 px): bočni meni levo, vsebina desno.
+   Tablica in telefon: tanka traka zgoraj (znak, spletišče, odjava) in
+   zavihki spodaj, kjer jih palec doseže.
+
+   Barve in pisava iz CLAUDE.md; nič od tega ne pride na javno spletišče.
+   --------------------------------------------------------------------------- */
+
+.okvir {
+  min-height: 100vh;
+  background: #fffcf8;
+}
+
+.glavno {
+  margin-left: 264px;
+  min-width: 0;
+}
+
+/* ---- Bočni meni ---- */
+
+.bocnik {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: 264px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  padding: 1.5rem 1rem 1.25rem;
+  background: #fff;
+  border-right: 1px solid #f2ede4;
+  overflow-y: auto;
+}
+
+.znak {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  color: #1c1917;
+  text-decoration: none;
+}
+
+.znakSlika {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  flex: none;
+}
+
+.znakTekst {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.znakIme {
+  font-size: 1.02rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+
+.znakOpis {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #a8a29e;
+}
+
+.grupa {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.grupaNaslov {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #a8a29e;
+  padding: 0 0.75rem;
+  margin-bottom: 0.4rem;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.93rem;
+  font-weight: 700;
+  color: #57534e;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+.navLink svg {
+  flex: none;
+  color: #a8a29e;
+  transition: color 0.15s;
+}
+.navLink:hover {
+  background: #faf6f0;
+  color: #1c1917;
+}
+.navLink:hover svg {
+  color: #57534e;
+}
+
+.navAktivan,
+.navAktivan:hover {
+  background: #fff4ec;
+  color: #c2410c;
+}
+.navAktivan svg,
+.navAktivan:hover svg {
+  color: #ea580c;
+}
+
+.kreiraj {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 12px;
+  border: 1px dashed #fdba74;
+  background: #fffaf5;
+  color: #c2410c;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s;
+}
+.kreiraj + .kreiraj {
+  margin-top: 0.35rem;
+}
+.kreiraj:hover {
+  background: #fff4ec;
+  border-style: solid;
+}
+
+.dno {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f2ede4;
+}
+
+.dnoLink {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border-radius: 12px;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #78716c;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+.dnoLink svg {
+  flex: none;
+}
+.dnoLink:hover {
+  background: #faf6f0;
+  color: #1c1917;
+}
+
+/* ---- Telefon in tablica ---- */
+
+.gore,
+.dolje,
+.novoMeni,
+.novoZavjesa {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .bocnik {
+    display: none;
+  }
+
+  .glavno {
+    margin-left: 0;
+    /* Prostor za spodnje zavihke, da ne prekrijejo zadnje vsebine. */
+    padding-bottom: calc(72px + env(safe-area-inset-bottom));
+  }
+
+  .gore {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    height: 60px;
+    padding: 0 1.25rem;
+    background: rgba(255, 253, 250, 0.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid #f2ede4;
+  }
+
+  .gore .znak {
+    padding: 0;
+  }
+
+  .gore .znakSlika {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+  }
+
+  .goreAlati {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .goreDugme {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    border: 0;
+    background: transparent;
+    color: #57534e;
+    cursor: pointer;
+  }
+  .goreDugme:hover {
+    background: #faf6f0;
+    color: #1c1917;
+  }
+
+  .dolje {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 20;
+    padding: 0.35rem 0.5rem calc(0.35rem + env(safe-area-inset-bottom));
+    background: rgba(255, 255, 255, 0.97);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid #f2ede4;
+  }
+
+  .doljeLink {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+    min-height: 54px;
+    border-radius: 14px;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #78716c;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .doljeAktivan {
+    color: #ea580c;
+  }
+
+  .doljeNovo {
+    color: #c2410c;
+  }
+  .doljeNovo span:first-child {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
+    background: #ea580c;
+    color: #fff;
+  }
+
+  .novoZavjesa {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 25;
+    background: rgba(28, 25, 23, 0.18);
+  }
+
+  .novoMeni {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    position: fixed;
+    right: 0.75rem;
+    bottom: calc(80px + env(safe-area-inset-bottom));
+    z-index: 30;
+    min-width: 220px;
+    padding: 0.5rem;
+    background: #fff;
+    border: 1px solid #f2ede4;
+    border-radius: 18px;
+    box-shadow: 0 18px 40px -12px rgba(28, 25, 23, 0.3);
+  }
+
+  .novoMeni a {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.8rem 0.9rem;
+    border-radius: 12px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #1c1917;
+    text-decoration: none;
+  }
+  .novoMeni a:hover {
+    background: #fff4ec;
+    color: #c2410c;
+  }
+}
