@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { headers } from "next/headers";
+import { SITE_URL } from "@/data/site";
 import { caveat } from "@/app/(statistika)/_linkovi/pisava";
 import { jezikGosta } from "@/app/(statistika)/_linkovi/tekst";
 import "../../globals.css";
@@ -38,6 +39,8 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 // Rokopisna pisava za slogan (izjema, potrjena od lastnika) je v _linkovi/pisava.ts.
 
 export const metadata: Metadata = {
+  // Slike za predogled ob deljenju morajo imeti poln naslov (https://…).
+  metadataBase: new URL(SITE_URL),
   title: "Šeherezada",
   robots: { index: false, follow: true, googleBot: { index: false, follow: true } },
   icons: { icon: "/favicon-32x32.png", apple: "/apple-touch-icon.png" },

@@ -1,5 +1,7 @@
+import type { Metadata } from "next";
 import { headers } from "next/headers";
-import { LOCALES, SITE_URL } from "@/data/site";
+import { cache } from "react";
+import { LOCALES, SHARE_IMAGE, SITE_NAME, SITE_URL } from "@/data/site";
 import { LOCATIONS } from "@/data/locations";
 import { imaBazu } from "@/app/(statistika)/_qr/baza";
 import StranicaPrikaz, { type DugmePrikaz } from "@/app/(statistika)/_linkovi/StranicaPrikaz";
@@ -53,16 +55,12 @@ function Rezerva({ jezik }: { jezik: ReturnType<typeof jezikGosta> }) {
   );
 }
 
-export default async function StranicaSaLinkovima({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ slug: string }>;
-  searchParams: Promise<{ jezik?: string }>;
-}) {
-  const [{ slug }, { jezik: trazeni }, zaglavlja] = await Promise.all([params, searchParams, headers()]);
-  const jezik = jezikGosta(zaglavlja.get("accept-language"), trazeni);
-
+/**
+ * Stran in njeni gumbi — enkrat na zahtevo. Berejo jih tako oznake za deljenje
+ * (generateMetadata) kot sama stran; cache() poskrbi, da gre v bazo samo
+ * prvi, drugi dobi isti rezultat.
+ */
+const naloziStranicu = cache(async (slug: string) => {
   let stranica: LinkStranica | null = null;
   let dugmad: readonly LinkDugme[] = [];
   try {
@@ -74,6 +72,64 @@ export default async function StranicaSaLinkovima({
   } catch (e) {
     console.error("LINKTREE: strani ni bilo mogoče prebrati", e);
   }
+  return { stranica, dugmad };
+});
+
+type Props = {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ jezik?: string }>;
+};
+
+/**
+ * PREDOGLED OB DELJENJU (WhatsApp, Viber, Messenger, Facebook)
+ *
+ * Brez oznak og: je WhatsApp pokazal samo ikono spletišča. Zdaj dobi veliko
+ * sliko znamke (ista kot pri naslovni strani), naslov z naslovom lokala in v
+ * opisu napise gumbov — prejemnik takoj vidi, kaj ga čaka za povezavo.
+ *
+ * Robot za predogled jezika navadno ne pošlje, zato dobi privzeti jezik;
+ * povezava s ?jezik=en da angleški predogled.
+ */
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
+  const [{ slug }, { jezik: trazeni }, zaglavlja] = await Promise.all([params, searchParams, headers()]);
+  const jezik = jezikGosta(zaglavlja.get("accept-language"), trazeni);
+  const { stranica, dugmad } = await naloziStranicu(slug);
+
+  const lokacija = stranica ? LOCATIONS.find((l) => l.id === stranica.lokacija) : undefined;
+  const naslov = lokacija
+    ? `${lokacija.name} · ${lokacija.street}, ${lokacija.city}`
+    : `${SITE_NAME} · ${(stranica && uzmi(stranica.podnaslov, jezik)) || "Fast Food & Grill"}`;
+
+  const napisi = dugmad.map((d) => uzmi(d.naslovi, jezik) || d.naziv).filter(Boolean);
+  const opis =
+    napisi.join(" · ") ||
+    (stranica && (uzmi(stranica.podnozje, jezik) || uzmi(stranica.podnaslov, jezik))) ||
+    "seherezada.net";
+
+  const slika = { url: SHARE_IMAGE.src, width: SHARE_IMAGE.width, height: SHARE_IMAGE.height, alt: SITE_NAME };
+  const og = LOCALES.find((l) => l.code === jezik)?.og;
+
+  return {
+    title: naslov,
+    description: opis,
+    openGraph: {
+      type: "website",
+      siteName: SITE_NAME,
+      locale: og,
+      url: `/links/${stranica?.slug ?? slug}`,
+      title: naslov,
+      description: opis,
+      images: [slika],
+    },
+    twitter: { card: "summary_large_image", title: naslov, description: opis, images: [slika] },
+  };
+}
+
+export default async function StranicaSaLinkovima({ params, searchParams }: Props) {
+  const [{ slug }, { jezik: trazeni }, zaglavlja] = await Promise.all([params, searchParams, headers()]);
+  const jezik = jezikGosta(zaglavlja.get("accept-language"), trazeni);
+
+  const { stranica, dugmad } = await naloziStranicu(slug);
 
   if (!stranica) return <Rezerva jezik={jezik} />;
 
