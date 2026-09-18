@@ -386,14 +386,11 @@
   align-items: center;
   gap: 0.4rem;
   /*
-    Nevidni prostor desno, širok natanko kot globus z razmikom levo.
-
-    Brez njega se na sredino postavi par "globus + naslov", besedilo samo pa
-    je bilo izmerjeno 10,5 px desno od sredine zaslona — oko črtici meri od
-    besedila, zato je bilo videti postrani. Zdaj je na sredini besedilo,
-    obe črtici sta od njega enako oddaljeni, globus pa sedi v levem razmiku.
+    Brez praznega prostora desno: na sredini je par "globus + naslov" kot
+    celota, zato sta razmika do obeh črtic enaka. Prej je bilo na sredini
+    samo besedilo — lastnik je videl ozek razmik levo (črtica–globus) in
+    širok desno (naslov–črtica), kar je bilo videti bolj postrani.
   */
-  padding-right: calc(15px + 0.4rem);
   color: #fff;
   font-size: 0.85rem;
   font-weight: 700;
