@@ -146,11 +146,36 @@ export default function QrDizajner({
     await postaviLogo(await odgovor.blob());
   }
 
+  /**
+   * PRENOS SLIKE — vedno prek blob naslova, ne prek data: URL
+   *
+   * download() iz knjižnice pri SVG sestavi `data:image/svg+xml,...` z vsem
+   * vred, tudi z logotipom. Z logotipom tak naslov preseže poldrugi megabajt,
+   * brskalnik pa tako dolgega naslova ne odpre — prenos se je tiho ustavil.
+   * Blob nima omejitve dolžine, zato gremo skozi getRawData().
+   */
   async function preuzmi(ekstenzija: "png" | "svg" | "jpeg" | "webp") {
-    const { default: QR } = await import("qr-code-styling");
-    const zaCrtanje = await stilZaCrtanje(stil);
-    const qr = new QR(opcijeQr(zaCrtanje, sadrzaj, velicina, ekstenzija === "svg" ? "svg" : "canvas", ekstenzija === "jpeg"));
-    await qr.download({ name: `qr-${slug || "kod"}`, extension: ekstenzija });
+    setGreska(null);
+    try {
+      const { default: QR } = await import("qr-code-styling");
+      const zaCrtanje = await stilZaCrtanje(stil);
+      const qr = new QR(opcijeQr(zaCrtanje, sadrzaj, velicina, ekstenzija === "svg" ? "svg" : "canvas", ekstenzija === "jpeg"));
+      const podaci = await qr.getRawData(ekstenzija);
+      if (!(podaci instanceof Blob)) throw new Error("slike ni bilo mogoče sestaviti");
+
+      const naslov = URL.createObjectURL(podaci);
+      const veza = document.createElement("a");
+      veza.href = naslov;
+      veza.download = `qr-${slug || "kod"}.${ekstenzija === "jpeg" ? "jpg" : ekstenzija}`;
+      document.body.appendChild(veza);
+      veza.click();
+      veza.remove();
+      // Naslov mora živeti, dokler brskalnik datoteke ne shrani.
+      setTimeout(() => URL.revokeObjectURL(naslov), 60_000);
+    } catch (e) {
+      console.error("QR: prenos ni uspel", e);
+      setGreska("Sliku nije bilo moguće preuzeti. Probaj ponovo ili izaberi drugi format.");
+    }
   }
 
   function sacuvaj() {
@@ -434,10 +459,6 @@ export default function QrDizajner({
             </label>
           </div>
 
-          <label className={s.kvacica}>
-            <input type="checkbox" checked={stil.providnaPozadina} onChange={(e) => promijeni("providnaPozadina", e.target.checked)} />
-            <span>Providna pozadina (PNG, SVG, WebP)</span>
-          </label>
         </section>
 
         {/* ---- Logo ---- */}
@@ -553,6 +574,12 @@ export default function QrDizajner({
               <button type="button" className={s.dugmeSporedno} onClick={() => preuzmi("jpeg")}>JPG</button>
               <button type="button" className={s.dugmeSporedno} onClick={() => preuzmi("webp")}>WebP</button>
             </div>
+            {/* Prosojno ozadje je odločitev o datoteki, ne o barvah, zato stoji
+                pri gumbih za prenos: JPG je ne zna, zato je tu tudi opozorilo. */}
+            <label className={s.kvacica}>
+              <input type="checkbox" checked={stil.providnaPozadina} onChange={(e) => promijeni("providnaPozadina", e.target.checked)} />
+              <span>Providna pozadina — radi u PNG, SVG i WebP, ne i u JPG</span>
+            </label>
             {!kod && nacin === "mjeren" && (
               <p className={s.pomoc}>Sačuvaj kod prije štampe — kratki link radi tek kad je sačuvan.</p>
             )}
