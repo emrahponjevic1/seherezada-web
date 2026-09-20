@@ -56,6 +56,8 @@ export interface QrStil {
   /** Delež širine koda, ki ga zasede logotip. */
   velicinaLoga: number;
   marginaLoga: number;
+  /** Zaobljenost vogalov logotipa v odstotkih krajše stranice; 50 je krog. */
+  radijusLoga: number;
   sakrijTackeIzaLoga: boolean;
 }
 
@@ -77,6 +79,7 @@ export const ZADANI_STIL: QrStil = {
   logo: null,
   velicinaLoga: 0.3,
   marginaLoga: 4,
+  radijusLoga: 0,
   sakrijTackeIzaLoga: true,
 };
 
@@ -174,6 +177,7 @@ export function ocistiStil(v: unknown): QrStil {
         : null,
     velicinaLoga: broj(s.velicinaLoga, 0.1, 0.5, z.velicinaLoga),
     marginaLoga: broj(s.marginaLoga, 0, 20, z.marginaLoga),
+    radijusLoga: broj(s.radijusLoga, 0, 50, z.radijusLoga),
     sakrijTackeIzaLoga: da(s.sakrijTackeIzaLoga, z.sakrijTackeIzaLoga),
   };
 }

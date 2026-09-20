@@ -16,6 +16,7 @@ import {
   upozorenjaStila,
   type QrStil,
 } from "@/app/(statistika)/_qr/stil";
+import { stilZaCrtanje } from "./logo";
 import { opcijeQr } from "./opcije";
 import s from "@/app/(statistika)/_qr/Statistika.module.css";
 
@@ -94,23 +95,30 @@ export default function QrDizajner({
 
   const kratkiLink = `${bazniUrl}/q/${slug}`;
   const sadrzaj = nacin === "mjeren" ? kratkiLink : odrediste || bazniUrl;
-  const opcije = useMemo(() => opcijeQr(stil, sadrzaj, 240, "svg"), [stil, sadrzaj]);
+  // Stil v nizu, da se predogled osveži ob vsaki spremembi, ne pa ob vsakem
+  // izrisu komponente.
+  const kljucStila = useMemo(() => JSON.stringify(stil), [stil]);
 
   useEffect(() => {
     let ziv = true;
-    import("qr-code-styling").then(({ default: QR }) => {
+    (async () => {
+      // Zaobljeni logotip nastane na platnu, zato je priprava asinhrona.
+      const [{ default: QR }, zaCrtanje] = await Promise.all([
+        import("qr-code-styling"),
+        stilZaCrtanje(JSON.parse(kljucStila) as QrStil),
+      ]);
       if (!ziv || !pregled.current) return;
       // Vsakič nova slika, ne update(): knjižnica nove nastavitve ZDRUŽI s
       // starimi, zato izklopljen prelaz barv (gradient) ostane in povozi
       // izbrano barvo — pike so ostale oranžne, čeprav je bila izbrana črna.
-      instanca.current = new QR(opcije);
+      instanca.current = new QR(opcijeQr(zaCrtanje, sadrzaj, 240, "svg"));
       pregled.current.replaceChildren();
       instanca.current.append(pregled.current);
-    });
+    })();
     return () => {
       ziv = false;
     };
-  }, [opcije]);
+  }, [kljucStila, sadrzaj]);
 
   const promijeni = <K extends keyof QrStil>(k: K, v: QrStil[K]) => setStil((p) => ({ ...p, [k]: v }));
 
@@ -140,7 +148,8 @@ export default function QrDizajner({
 
   async function preuzmi(ekstenzija: "png" | "svg" | "jpeg" | "webp") {
     const { default: QR } = await import("qr-code-styling");
-    const qr = new QR(opcijeQr(stil, sadrzaj, velicina, ekstenzija === "svg" ? "svg" : "canvas", ekstenzija === "jpeg"));
+    const zaCrtanje = await stilZaCrtanje(stil);
+    const qr = new QR(opcijeQr(zaCrtanje, sadrzaj, velicina, ekstenzija === "svg" ? "svg" : "canvas", ekstenzija === "jpeg"));
     await qr.download({ name: `qr-${slug || "kod"}`, extension: ekstenzija });
   }
 
@@ -437,7 +446,7 @@ export default function QrDizajner({
           <div className={s.logoRed}>
             {stil.logo ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={stil.logo} alt="" className={s.logoSlicica} />
+              <img src={stil.logo} alt="" className={s.logoSlicica} style={{ borderRadius: `${stil.radijusLoga}%` }} />
             ) : (
               <span className={s.logoPrazno}>Bez loga</span>
             )}
@@ -478,6 +487,12 @@ export default function QrDizajner({
                   <input className={s.klizac} type="range" min={0} max={20} value={stil.marginaLoga} onChange={(e) => promijeni("marginaLoga", Number(e.target.value))} />
                 </label>
               </div>
+              <label className={s.polje}>
+                <span className={s.oznakaPolja}>
+                  Zaobljenost loga: {stil.radijusLoga === 0 ? "oštri uglovi" : stil.radijusLoga >= 50 ? "krug" : `${stil.radijusLoga}%`}
+                </span>
+                <input className={s.klizac} type="range" min={0} max={50} value={stil.radijusLoga} onChange={(e) => promijeni("radijusLoga", Number(e.target.value))} />
+              </label>
               <label className={s.kvacica}>
                 <input type="checkbox" checked={stil.sakrijTackeIzaLoga} onChange={(e) => promijeni("sakrijTackeIzaLoga", e.target.checked)} />
                 <span>Ukloni tačke iza loga</span>

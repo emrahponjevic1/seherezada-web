@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import type { QrStil } from "@/app/(statistika)/_qr/stil";
+import { stilZaCrtanje } from "./logo";
 import { opcijeQr } from "./opcije";
 import s from "@/app/(statistika)/_qr/Statistika.module.css";
 
@@ -20,11 +21,15 @@ export default function QrSlicica({
 
   useEffect(() => {
     let ziv = true;
-    import("qr-code-styling").then(({ default: QRCodeStyling }) => {
+    (async () => {
+      const [{ default: QRCodeStyling }, stil] = await Promise.all([
+        import("qr-code-styling"),
+        stilZaCrtanje(JSON.parse(kljuc)),
+      ]);
       if (!ziv || !ref.current) return;
       ref.current.replaceChildren();
-      new QRCodeStyling(opcijeQr(JSON.parse(kljuc), podaci, velicina, "svg")).append(ref.current);
-    });
+      new QRCodeStyling(opcijeQr(stil, podaci, velicina, "svg")).append(ref.current);
+    })();
     return () => {
       ziv = false;
     };
