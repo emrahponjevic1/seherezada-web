@@ -59,9 +59,20 @@ export function localizedSlugUrl(
 /** Ključ v Next zapisu alternates.languages -> cel naslov. */
 type Hreflang = Record<string, string>;
 
-function sestavi(naslovZaJezik: (locale: AppLocale) => string): Hreflang {
+/**
+ * `jeziki` omeji seznam na jezike, v katerih stran res obstaja — objava na
+ * blogu je lahko samo slovenska in angleška. Brez njega je seznam vseh šest.
+ * x-default vedno kaže na slovenščino.
+ */
+function sestavi(
+  naslovZaJezik: (locale: AppLocale) => string,
+  jeziki?: readonly string[]
+): Hreflang {
   const out: Hreflang = {};
-  for (const l of LOCALES) out[l.hreflang] = naslovZaJezik(l.code);
+  for (const l of LOCALES) {
+    if (jeziki && !jeziki.includes(l.code)) continue;
+    out[l.hreflang] = naslovZaJezik(l.code);
+  }
   out["x-default"] = naslovZaJezik(DEFAULT_CODE);
   return out;
 }
@@ -75,10 +86,25 @@ export function hreflangZaPot(pathname: StaticPathname): Hreflang {
   return sestavi((locale) => localizedUrl(pathname, locale));
 }
 
-/** Vseh šest naslovov strani s slugom (objava, oglas, poslovalnica). */
+/** Vseh šest naslovov strani s slugom (oglas, poslovalnica). */
 export function hreflangZaSlug(
   pathname: SlugPathname,
   slug: string
 ): Hreflang {
   return sestavi((locale) => localizedSlugUrl(pathname, slug, locale));
+}
+
+/**
+ * Za stran, ki ima v vsakem jeziku SVOJ slug in ne obstaja v vseh jezikih —
+ * objavo na blogu: { sl: "poceni-hrana-ljubljana", en: "cheap-eats-ljubljana" }.
+ * Našteje samo te jezike, x-default kaže na slovenščino, ki je vedno med njimi.
+ */
+export function hreflangZaSluge(
+  pathname: SlugPathname,
+  slugi: Partial<Record<AppLocale, string>>
+): Hreflang {
+  return sestavi(
+    (locale) => localizedSlugUrl(pathname, slugi[locale] ?? "", locale),
+    Object.keys(slugi)
+  );
 }

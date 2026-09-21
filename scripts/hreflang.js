@@ -5,7 +5,8 @@
 // spominje uzvraca istim skupom.
 //
 // Provjeravamo:
-//   1. svaka stranica ima svih 6 jezika + x-default
+//   1. svaka stranica ima svih 6 jezika + x-default (objava na blogu samo
+//      jezike na koje je prevedena + x-default)
 //   2. stranica navodi SAMU SEBE (self-reference)
 //   3. uzajamnost: ako A navodi B, onda B navodi A istim skupom
 //   4. canonical pokazuje na samu sebe
@@ -44,8 +45,15 @@ async function stranica(u) {
     const s = await daj(u);
     if (s.status !== 200) { javi(u + " -> HTTP " + s.status); continue; }
 
+    // Objava na blogu postoji samo u jezicima na koje je prevedena, pa ima
+    // manje tagova. I tada mora imati x-default i bar jedan jezik; da je skup
+    // isti na svim verzijama, provjerava petlja ispod.
     const kljucevi = Object.keys(s.alt);
-    if (kljucevi.length !== 7)
+    const objava = /\/blog\/[^/]+$/.test(u);
+    if (objava) {
+      if (kljucevi.length < 2 || !kljucevi.includes("x-default"))
+        javi(u + " ima hreflang " + kljucevi.join(",") + ", ocekujem jezik + x-default");
+    } else if (kljucevi.length !== 7)
       javi(u + " ima " + kljucevi.length + " hreflang tagova, ocekujem 7");
 
     if (!Object.values(s.alt).includes(u))

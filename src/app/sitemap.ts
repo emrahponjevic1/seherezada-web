@@ -3,7 +3,7 @@ import { LOCALES } from "@/data/site";
 import { localizedSlugUrl, localizedUrl } from "@/i18n/urls";
 import type { StaticPathname } from "@/i18n/urls";
 import { LOCATIONS, LOCATION_SLUG } from "@/data/locations";
-import { BLOG_POSTS } from "@/data/blog";
+import { objaveVJeziku } from "@/data/blog";
 import { OPEN_POSITIONS } from "@/data/jobs";
 
 // ---------------------------------------------------------------------------
@@ -79,7 +79,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
       ),
 
       // Objave in oglasi. Dokler sta seznama prazna, teh vrstic preprosto ni.
-      ...BLOG_POSTS.map((post) =>
+      // Objava je v sitemapu samo v jezikih, v katere je prevedena.
+      ...objaveVJeziku(locale.code).map((post) =>
         entry(localizedSlugUrl("/blog/[slug]", post.slug, locale.code), 0.6)
       ),
       ...OPEN_POSITIONS.map((job) =>

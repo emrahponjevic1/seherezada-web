@@ -108,8 +108,13 @@ const javi = (vrsta, gdje, sto) => nalazi.push({ vrsta, gdje, sto });
     while ((mm = spoj.exec(bezSkripti)))
       javi("spojene-rijeci", u, bezSkripti.slice(mm.index - 30, mm.index + 40).replace(/<[^>]+>/g, ""));
 
-    // svi unutrasnji linkovi moraju ostati u istom jeziku
-    for (const [, href] of h.matchAll(/<a[^>]+href="(\/[^"#?]*)"/g)) {
+    // svi unutrasnji linkovi moraju ostati u istom jeziku. Izuzetak je link
+    // s atributom hrefLang: to je namjeran link na prevod (npr. "Članek je na
+    // voljo tudi v jeziku: English" pod naslovom objave), ne zalutali link.
+    for (const [, atributi] of h.matchAll(/<a\b([^>]*)>/g)) {
+      const hm = atributi.match(/\bhref="(\/[^"#?]*)"/);
+      if (!hm || /\bhrefLang="/i.test(atributi)) continue;
+      const href = hm[1];
       const j = JEZICI.find((x) => x !== "sl" && (href === "/" + x || href.startsWith("/" + x + "/"))) || "sl";
       if (j !== ocekivan) javi("link-van-jezika", u, `${href} (jezik ${j})`);
     }

@@ -30,9 +30,16 @@ const PinSvg = ({ size = 16, className }: { size?: number; className?: string })
 
 interface SiteNavbarProps {
   activeRoute?: "home" | "meni" | "galerija" | "o-nas" | "pogosta-vprasanja" | "zaposlitev" | "blog" | "kontakt" | "studentski-boni" | "halal";
+  /**
+   * Naslov te strani v vsakem jeziku, ko ga prekidalnik ne more izračunati
+   * sam. Objava na blogu ima v vsakem jeziku svoj slug in je v nekaterih
+   * jezikih sploh ni — brez tega bi klik na ENG vodil na /en/blog/<slovenski
+   * slug>, torej na 404.
+   */
+  potiJezikov?: Partial<Record<(typeof LOCALES)[number]["code"], string>>;
 }
 
-export default function SiteNavbar({ activeRoute = "home" }: SiteNavbarProps) {
+export default function SiteNavbar({ activeRoute = "home", potiJezikov }: SiteNavbarProps) {
   // Besedila so v messages/<jezik>.json pod ključem "navigacija".
   const t = useTranslations("navigacija");
 
@@ -77,6 +84,7 @@ export default function SiteNavbar({ activeRoute = "home" }: SiteNavbarProps) {
 
   /** Ista stran v drugem jeziku; slug ostane, pot se prevede. */
   const potZaJezik = (jezik: (typeof LOCALES)[number]["code"]) =>
+    potiJezikov?.[jezik] ??
     getPathname({
       href: { pathname: notranjaPot, params: parametriPoti },
       locale: jezik,

@@ -1,13 +1,10 @@
 "use client";
 
 import { useMemo } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import styles from "./BlogPageContent.module.css";
-import {
-  BLOG_POSTS,
-  BlogPost,
-} from "./BlogData";
+import { objaveVJeziku } from "./BlogData";
 
 // Clean Vector SVG Icons (No external library dependencies)
 const BookIcon = () => (
@@ -149,16 +146,21 @@ export default function BlogPageContent() {
   // Vsaka objava ima svojo stran na /blog/<slug>, zato tukaj ni več
   // stanja za odpiranje objave v oknu — kartice so navadne povezave.
 
+  // Samo objave, ki obstajajo v jeziku strani, z besedilom v tem jeziku.
+  // Na nemškem arhivu tako ni slovenskih člankov.
+  const locale = useLocale();
+  const objave = useMemo(() => objaveVJeziku(locale), [locale]);
+
   /** Objava, prikazana veliko na vrhu arhiva. */
   const featuredPost = useMemo(
-    () => BLOG_POSTS.find((p) => p.isFeatured) ?? BLOG_POSTS[0],
-    []
+    () => objave.find((p) => p.isFeatured) ?? objave[0],
+    [objave]
   );
 
   /** Vse ostale objave. */
   const gridPosts = useMemo(
-    () => BLOG_POSTS.filter((p) => p.slug !== featuredPost?.slug),
-    [featuredPost]
+    () => objave.filter((p) => p.slug !== featuredPost?.slug),
+    [objave, featuredPost]
   );
 
 

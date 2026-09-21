@@ -679,6 +679,69 @@
   margin: 2rem 0 0.8rem 0;
 }
 
+/* Avtor in licenca slike v podnapisu — vidna, a tiha. */
+.singleCaption a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Povezava na isto objavo v drugem jeziku, pod uvodom. */
+.singleLangNote {
+  font-size: 0.95rem;
+  color: #57534e;
+  margin: -1.5rem 0 2rem 0;
+}
+
+.singleLangNote a {
+  color: #ea580c;
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: #fed7aa;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.singleLangNote a:hover,
+.singleLangNote a:focus-visible {
+  text-decoration-color: #ea580c;
+}
+
+/* Globalni slogi seznamom vzamejo zamik in razmik — v članku ju vrnemo,
+   sicer pike visijo čez rob in seznam se prilepi na naslednji odstavek. */
+.singleBodyHtml ul {
+  margin: 0 0 1.5rem 0;
+  padding-left: 1.4rem;
+}
+
+.singleBodyHtml li {
+  margin: 0 0 0.5rem 0;
+}
+
+.singleBodyHtml li::marker {
+  color: #ea580c;
+}
+
+.singleBodyHtml strong {
+  color: #1c1917;
+  font-weight: 700;
+}
+
+/* Povezava mora biti videti kot povezava, ne kot navadno besedilo. */
+.singleBodyHtml a {
+  color: #ea580c;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: #fed7aa;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.singleBodyHtml a:hover,
+.singleBodyHtml a:focus-visible {
+  text-decoration-color: #ea580c;
+}
+
 /* Drop Cap (Strictly Plus Jakarta Sans Bold) */
 :global(.dropCap)::first-letter {
   font-family: var(--font-jakarta), inherit !important;
