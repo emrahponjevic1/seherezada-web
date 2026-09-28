@@ -10,9 +10,9 @@
 // localStorage zato, ker je izbira zapisana v politiki kot piškotek in ker
 // jo bo pozneje moral prebrati tudi strežnik.
 //
-// KO BO PRIŠEL GOOGLE ANALYTICS (Faza 7)
-// Skripta se sme naložiti šele, ko `readConsent()?.analytics === true`.
-// Nikoli prej. Do takrat analitičnih piškotkov ni — in politika to tudi piše.
+// GOOGLE ANALYTICS (Faza 7, vklopljeno 28. 9. 2026)
+// Skripta se naloži šele, ko `readConsent()?.analytics === true`. Nikoli
+// prej. Nalaga jo src/components/legal/GoogleAnalytics.tsx.
 // ---------------------------------------------------------------------------
 
 export const CONSENT_COOKIE = "cookie_consent";
@@ -25,16 +25,17 @@ const ONE_YEAR_SECONDS = 365 * 24 * 60 * 60;
  *         `_ga` ni, politika piškotkov jih prikaže kot „ni v uporabi".
  * true  = analitika je vključena. Naloži se samo gostom, ki so privolili.
  *
- * KO BOŠ VKLAPLJAL ANALITIKO (Faza 7), naredi troje:
- *   1. tu nastavi `true`
- *   2. v layout.tsx dodaj skripto, ki se naloži samo ob
- *      `readConsent()?.analytics === true`
- *   3. preveri, da /piskotki zdaj kaže `_ga` kot dejaven
- *
  * Stran o piškotkih bere prav to vrednost, zato se besedilo in resnica
- * ne moreta razhajati — ena vrstica premakne oboje hkrati.
+ * ne moreta razhajati — ena vrstica premakne oboje hkrati. Če analitiko
+ * kdaj izklopiš, popravi tudi odstavek „analitika“ v politiki zasebnosti.
  */
-export const ANALYTICS_ENABLED = false;
+export const ANALYTICS_ENABLED = true;
+
+/**
+ * Oznaka lastnosti v Google Analytics (Admin → Data streams → Seherezada
+ * sajt). Ni skrivnost — v kodi strani jo vidi vsak obiskovalec.
+ */
+export const GA_MEASUREMENT_ID = "G-D67HJP5VE5";
 
 export interface Consent {
   /** Nujni piškotki so vedno vklopljeni — brez njih stran ne deluje. */

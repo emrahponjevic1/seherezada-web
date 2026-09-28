@@ -4,6 +4,7 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import CookieBanner from "@/components/legal/CookieBanner";
+import GoogleAnalytics from "@/components/legal/GoogleAnalytics";
 import OrganizationJsonLd from "@/components/seo/OrganizationJsonLd";
 import { routing } from "@/i18n/routing";
 import { BRAND_COLOR, SHARE_IMAGE, SITE_NAME, SITE_URL, localeByCode } from "@/data/site";
@@ -119,10 +120,11 @@ export default async function LocaleLayout({
       <body>
         <NextIntlClientProvider>
           {children}
-          {/* Pasica se pokaže samo, dokler gost ni izbral. Skripte za analitiko
-              se sme naložiti šele, ko privolitev to dovoli — glej src/lib/consent.ts */}
+          {/* Pasica se pokaže samo, dokler gost ni izbral. Analitika se naloži
+              šele, ko privolitev to dovoli — glej src/lib/consent.ts */}
           <OrganizationJsonLd locale={locale as AppLocale} />
           <CookieBanner />
+          <GoogleAnalytics />
         </NextIntlClientProvider>
       </body>
     </html>

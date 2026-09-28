@@ -294,6 +294,13 @@ export default function ZasebnostPageContent() {
               {t.rich("zemljevid", { b: (chunks) => <strong>{chunks}</strong> })}
             </p>
 
+            {/* Google Analytics — naloži se samo po privolitvi v pasici.
+                Rok hrambe (14 mesecev) je nastavljen v GA4 pod Admin →
+                Data retention; če ga spremeniš, popravi tudi to besedilo. */}
+            <p className={styles.bodyText}>
+              {t.rich("analitika", { b: (chunks) => <strong>{chunks}</strong> })}
+            </p>
+
             {/* Sporočila iz obrazca gredo skozi našega poštnega ponudnika,
                 ki pri tem obdela ime, naslov in vsebino. Dokler je obrazec
                 samo hlinil pošiljanje, tega ni bilo treba navesti; zdaj je. */}
