@@ -178,8 +178,11 @@ export const BLOG_POSTS: BlogPost[] = [
     isoDate: "2026-10-09",
     readTime: "4 min branja",
     author: { name: "Ekipa Šeherezada", role: "Šeherezada Ljubljana" },
-    coverImage: "/images/seherezada-student-meal.avif",
-    imageCaption: "Študentski obrok pri nas: doplačilo 2,55 €.",
+    // Slika po izbiri lastnika (9. 10. 2026). JPEG, da ga znata prebrati tudi
+    // predogleda povezave na Facebooku in WhatsAppu.
+    coverImage: "/images/seherezada-blog-studentski-boni.jpg",
+    imageCaption:
+      "Študentski obrok pri nas: jufka kebab s solato, pomfrijem in pijačo, doplačilo 2,55 €.",
     isFeatured: true,
     contentHtml: `
       <p>Kosilo je med študijem eden največjih mesečnih stroškov — in hkrati tisti, pri katerem največ prihraniš, ne da bi jedel slabše. Razlog je preprost: država ti vsak obrok subvencionira, ti pa plačaš le razliko.</p>
@@ -244,7 +247,8 @@ export const BLOG_POSTS: BlogPost[] = [
         date: "9 October 2026",
         readTime: "4 min read",
         author: { name: "The Šeherezada team", role: "Šeherezada Ljubljana" },
-        imageCaption: "A student meal with us: €2.55 top-up.",
+        imageCaption:
+          "A student meal with us: jufka kebab with salad, fries and a drink, €2.55 top-up.",
         contentHtml: `
           <p>Lunch is one of the biggest monthly costs of student life — and the one where you can save the most without eating worse. The reason is simple: the state subsidises every meal and you only pay the difference.</p>
           <p>Here are the numbers as they stand today, and how to get the most out of them.</p>
