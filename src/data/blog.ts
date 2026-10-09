@@ -162,6 +162,142 @@ export const BLOG_CATEGORIES: BlogCategoryFilter[] = [
     KONEC PREDLOGE — kopiraj do tu  */
 
 export const BLOG_POSTS: BlogPost[] = [
+  // Zneski: subvencija 5,19 € (STUDENT_SUBSIDY v src/data/studentski-boni.ts,
+  // preverjeno 25. 8. 2026), doplačilo 2,55 € in 19 jedi na bon
+  // (src/components/menu/MenuData.ts). Ko se subvencija uskladi — januarja in
+  // julija — popravi tudi ta članek.
+  {
+    slug: "kako-prihraniti-pri-kosilu",
+    title: "Kako prihraniti pri kosilu med študijem",
+    metaTitle: "Študentski boni v Ljubljani: koliko stane kosilo | Šeherezada",
+    excerpt:
+      "Država prispeva 5,19 €, ti doplačaš 2,55 €. Koliko to nanese na mesec, kako deluje bon in kaj pri nas dobiš zanj.",
+    category: "Študentska prehrana",
+    categorySlug: "boni",
+    date: "9. oktober 2026",
+    isoDate: "2026-10-09",
+    readTime: "4 min branja",
+    author: { name: "Ekipa Šeherezada", role: "Šeherezada Ljubljana" },
+    coverImage: "/images/seherezada-student-meal.avif",
+    imageCaption: "Študentski obrok pri nas: doplačilo 2,55 €.",
+    isFeatured: true,
+    contentHtml: `
+      <p>Kosilo je med študijem eden največjih mesečnih stroškov — in hkrati tisti, pri katerem največ prihraniš, ne da bi jedel slabše. Razlog je preprost: država ti vsak obrok subvencionira, ti pa plačaš le razliko.</p>
+      <p>Spodaj so številke, kakršne so danes, in kako jih izkoristiš do konca.</p>
+
+      <h2>Koliko res stane obrok na bon</h2>
+      <ul>
+        <li><strong>Subvencija države:</strong> 5,19 € na obrok (preverjeno 25. 8. 2026 na <a href="https://www.studentska-prehrana.si" rel="noopener">studentska-prehrana.si</a>)</li>
+        <li><strong>Doplačilo pri nas:</strong> 2,55 €</li>
+        <li><strong>Skupna vrednost obroka:</strong> 7,74 €</li>
+      </ul>
+      <p>Iz žepa torej daš 2,55 €, pojés pa obrok, ki je vreden 7,74 €.</p>
+
+      <h2>Koliko je to na mesec</h2>
+      <p>Če z bonom kosiš 20 dni v mesecu, država zate prispeva <strong>103,80 €</strong>. Ti v istem mesecu za kosila odšteješ 51,00 €. Če bi iste obroke plačeval brez bona, bi te stali okoli 155 €.</p>
+      <p>Na leto študija je to nekaj sto evrov razlike — brez odrekanja in brez kuhanja.</p>
+
+      <h2>Kako bon sploh deluje</h2>
+      <ul>
+        <li>Prijaviš se v aplikaciji <strong>Študentska prehrana</strong> (ŠOS) in bone unovčiš s telefonom.</li>
+        <li>Na voljo imaš <strong>dva bona na dan</strong>.</li>
+        <li>Med enim in drugim bonom mora miniti <strong>najmanj 4 ure</strong>.</li>
+        <li>Sistem bone sprejema <strong>od 07:00 do 24:00</strong>, ne glede na to, do kdaj je lokal odprt.</li>
+      </ul>
+      <p>Zadnja točka je pomembna: mi smo odprti dlje, kot velja bon. Po polnoči pri nas lahko ješ, a bon takrat ne velja več.</p>
+
+      <h2>Kaj za 2,55 € dobiš pri nas</h2>
+      <p>Pri Šeherezadi je na bon <strong>19 jedi</strong>, doplačilo pa je 2,55 € za glavno jed, solato, jabolko in pijačo. Na primer:</p>
+      <ul>
+        <li>Döner kebab, jufka kebab ali crispy jufka</li>
+        <li>Falafel v lepinji in zelenjavni kebab — oba brez mesa</li>
+        <li>Crispy burger, piščančji burger, hamburger in hamburger s sirom</li>
+        <li>Vse pice: kebab, salami, tuna, margarita, zelenjava in klasik</li>
+        <li>Piščančji svet z rižem ali pomfrijem in pečeni piščanec</li>
+      </ul>
+      <p><a href="/meni">Celoten meni s cenami</a> · <a href="/studentski-boni">Kako pri nas plačaš z bonom</a></p>
+
+      <h2>Pet načinov, da iztržiš več</h2>
+      <ul>
+        <li><strong>Izkoristi oba bona.</strong> En bon na dan je navada, ne pravilo. Drugi bon je drugo kosilo ali večerja.</li>
+        <li><strong>Drugi bon prihrani za zvečer.</strong> Marsikje kuhinja zapre popoldne, mi pa bone sprejemamo do polnoči.</li>
+        <li><strong>Pazi na razmik štirih ur.</strong> Najpogostejši razlog, da bon ob kosilu ne gre skozi, je prezgodnji zajtrk na bon.</li>
+        <li><strong>Doplačilo je enako za vse jedi na bon.</strong> Zato izberi tisto, ki te res nasiti, ne najcenejše.</li>
+        <li><strong>Zapomni si delovni čas, ne obljub.</strong> Trubarjeva je odprta vsak dan 09:00–02:00, v petek in soboto do 03:00; Slovenska 55 vsak dan 08:00–01:00.</li>
+      </ul>
+
+      <h2>Kje nas najdeš</h2>
+      <ul>
+        <li><a href="/lokacije/trubarjeva-31">Trubarjeva 31</a> — tri minute od Prešernovega trga, vsak dan 09:00–02:00, v petek in soboto do 03:00</li>
+        <li><a href="/lokacije/slovenska-55">Slovenska 55</a> — pri Bavarskem dvoru, vsak dan 08:00–01:00</li>
+      </ul>
+      <p>Bon velja do polnoči, mi pa smo odprti dlje. Pridi z bonom ali brez njega.</p>
+    `,
+    prevodi: {
+      en: {
+        slug: "student-lunch-budget-ljubljana",
+        title: "How to spend less on lunch as a student in Ljubljana",
+        metaTitle: "Student Meal Vouchers in Ljubljana: the Numbers | Šeherezada",
+        excerpt:
+          "The state pays €5.19, you top up €2.55. What that adds up to in a month, how the voucher works and what you get for it with us.",
+        category: "Student meals",
+        date: "9 October 2026",
+        readTime: "4 min read",
+        author: { name: "The Šeherezada team", role: "Šeherezada Ljubljana" },
+        imageCaption: "A student meal with us: €2.55 top-up.",
+        contentHtml: `
+          <p>Lunch is one of the biggest monthly costs of student life — and the one where you can save the most without eating worse. The reason is simple: the state subsidises every meal and you only pay the difference.</p>
+          <p>Here are the numbers as they stand today, and how to get the most out of them.</p>
+
+          <h2>What a subsidised meal actually costs</h2>
+          <ul>
+            <li><strong>State subsidy:</strong> €5.19 per meal (checked on 25 August 2026 at <a href="https://www.studentska-prehrana.si" rel="noopener">studentska-prehrana.si</a>)</li>
+            <li><strong>Top-up with us:</strong> €2.55</li>
+            <li><strong>Total value of the meal:</strong> €7.74</li>
+          </ul>
+          <p>So you pay €2.55 out of pocket for a meal worth €7.74.</p>
+
+          <h2>What that adds up to in a month</h2>
+          <p>If you use a voucher for lunch 20 days a month, the state contributes <strong>€103.80</strong> on your behalf. You pay €51.00. The same meals without vouchers would cost you around €155.</p>
+
+          <h2>How the voucher works</h2>
+          <ul>
+            <li>You register in the <strong>Študentska prehrana</strong> app (ŠOS) and pay with your phone.</li>
+            <li>You get <strong>two vouchers per day</strong>.</li>
+            <li>There must be at least <strong>4 hours</strong> between them.</li>
+            <li>The system accepts vouchers <strong>from 7 am to midnight</strong>, no matter how late the place itself is open.</li>
+          </ul>
+          <p>That last point matters here: we stay open later than the voucher is valid. After midnight you can still eat with us, you just can't pay with a voucher.</p>
+
+          <h2>What €2.55 gets you with us</h2>
+          <p>We have <strong>19 dishes</strong> on student vouchers, and the €2.55 top-up covers a main dish, salad, an apple and a drink. For example:</p>
+          <ul>
+            <li>Döner kebab, jufka kebab or crispy jufka</li>
+            <li>Falafel in flatbread and veggie kebab — both meat-free</li>
+            <li>Crispy burger, chicken burger, hamburger and cheeseburger</li>
+            <li>Every pizza: kebab, salami, tuna, margherita, vegetable and classic</li>
+            <li>Chicken with rice or fries, and roast chicken</li>
+          </ul>
+          <p><a href="/en/menu">Full menu with prices</a> · <a href="/en/student-vouchers">How vouchers work with us</a></p>
+
+          <h2>Five ways to get more out of it</h2>
+          <ul>
+            <li><strong>Use both vouchers.</strong> One a day is a habit, not a rule. The second one is dinner.</li>
+            <li><strong>Save the second voucher for the evening.</strong> Many kitchens close in the afternoon; we take vouchers until midnight.</li>
+            <li><strong>Mind the four-hour gap.</strong> The most common reason a lunch voucher is refused is a breakfast voucher used too early.</li>
+            <li><strong>The top-up is the same for every voucher dish.</strong> So pick the one that actually fills you up, not the cheapest one.</li>
+            <li><strong>Remember the opening hours.</strong> Trubarjeva: daily 9 am – 2 am, Fridays and Saturdays until 3 am. Slovenska 55: daily 8 am – 1 am.</li>
+          </ul>
+
+          <h2>Where to find us</h2>
+          <ul>
+            <li><a href="/en/locations/trubarjeva-31">Trubarjeva 31</a> — three minutes from Prešeren Square, daily 9 am – 2 am, Fri and Sat until 3 am</li>
+            <li><a href="/en/locations/slovenska-55">Slovenska 55</a> — next to Bavarski dvor, daily 8 am – 1 am</li>
+          </ul>
+        `,
+      },
+    },
+  },
   // Podatki o drugih lokalih: Visit Ljubljana in uradne strani lokalov,
   // preverjeno 21. 9. 2026. Cen drugih lokalov namenoma ne navajamo — ne
   // moremo jih sproti preverjati, napačna cena tujega lokala pa bi bila
@@ -182,7 +318,6 @@ export const BLOG_POSTS: BlogPost[] = [
     coverImage: "/images/seherezada-blog-tromostovje.jpg",
     imageCaption:
       "Ljubljanica s Tromostovjem in Frančiškansko cerkvijo, tri minute od Šeherezade na Trubarjevi.",
-    isFeatured: true,
     contentHtml: `
       <p>V središču Ljubljane lahko še vedno dobro ješ za nekaj evrov, če veš, kam iti. Zbrali smo mesta od bureka ob treh zjutraj do kranjske klobase in tržnice.</p>
       <p>Da ne bo pomote: Šeherezada je naš lokal, zato je na seznamu prva. Drugi lokali z nami niso povezani. Delovne čase smo preverili septembra 2026, pred obiskom pa jih vseeno preverite na Googlu.</p>
