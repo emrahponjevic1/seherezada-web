@@ -13,6 +13,8 @@ grupa: zagrade znače da se ime foldera ne pojavljuje u URL-u.
     budilica/           /statistika/budilica — dnevni poziv da Supabase ne zaspi
   links/                /links/<slug> — stranica s linkovima koju vidi gost
   q/[slug]/             kratki linkovi (seherezada.net/q/...)
+  _ankete/, anketa/     ankete za ekipu (/anketa) — sve u _ankete/README.md
+    statistika/ankete/  rezultati anketa u panelu
 ```
 
 Folderi `_qr` i `_linkovi` su privatni (donja crta): Next.js od njih ne pravi

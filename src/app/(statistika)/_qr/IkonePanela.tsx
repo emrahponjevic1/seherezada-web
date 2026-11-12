@@ -58,6 +58,18 @@ export function IkonaLinktree(p: Lastnosti) {
   );
 }
 
+export function IkonaAnketa(p: Lastnosti) {
+  return (
+    <Okvir {...p}>
+      <rect x="5" y="4" width="14" height="17" rx="2.5" />
+      <path d="M9 4.5V3.5h6v1" />
+      <path d="M8.5 10l1.5 1.5L12.5 9" />
+      <path d="M8.5 15.5l1.5 1.5 2.5-2.5" />
+      <path d="M14.5 10.5h1.5M14.5 16h1.5" />
+    </Okvir>
+  );
+}
+
 export function IkonaPlus(p: Lastnosti) {
   return (
     <Okvir {...p}>

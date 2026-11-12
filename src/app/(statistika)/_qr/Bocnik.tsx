@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
+  IkonaAnketa,
   IkonaLinktree,
   IkonaOdjava,
   IkonaPlus,
@@ -17,18 +18,20 @@ import o from "./Okvir.module.css";
 // ---------------------------------------------------------------------------
 // MENI NADZORNE PLOŠČE
 //
-// Trije deli, vsak s svojo stranjo: Pregled (številke), QR kode, Linktree.
+// Štirje deli, vsak s svojo stranjo: Pregled (številke), QR kode, Linktree,
+// Ankete (rezultati anket za ekipo).
 // Ustvarjanje je v meniju vedno pri roki — lastnik ne išče gumba po straneh.
 //
-// Na telefonu isti trije deli kot zavihki na dnu, četrti je "Novo" z
+// Na telefonu isti štirje deli kot zavihki na dnu, peti je "Novo" z
 // izbiro med QR kodo in linktree stranjo.
 // ---------------------------------------------------------------------------
 
-type Del = "pregled" | "kodovi" | "linkovi";
+type Del = "pregled" | "kodovi" | "linkovi" | "ankete";
 
 /** Kateri del menija je aktiven glede na naslov strani. */
 function aktivniDel(pot: string): Del {
   if (pot.startsWith("/statistika/linkovi")) return "linkovi";
+  if (pot.startsWith("/statistika/ankete")) return "ankete";
   if (pot === "/statistika") return "pregled";
   // /statistika/kodovi, /statistika/novi in /statistika/<id> so vse kode.
   return "kodovi";
@@ -38,6 +41,7 @@ const STAVKE: { del: Del; href: string; naziv: string; kratko: string; Ikona: ty
   { del: "pregled", href: "/statistika", naziv: "Pregled", kratko: "Pregled", Ikona: IkonaPregled },
   { del: "kodovi", href: "/statistika/kodovi", naziv: "QR kodovi", kratko: "Kodovi", Ikona: IkonaQr },
   { del: "linkovi", href: "/statistika/linkovi", naziv: "Linktree", kratko: "Linktree", Ikona: IkonaLinktree },
+  { del: "ankete", href: "/statistika/ankete", naziv: "Ankete", kratko: "Ankete", Ikona: IkonaAnketa },
 ];
 
 function Znak() {

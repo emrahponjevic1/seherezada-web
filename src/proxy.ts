@@ -49,9 +49,9 @@ export default function proxy(zahteva: NextRequest) {
 
 // /q/... (kratke povezave QR kod), /statistika in /links niso del večjezičnega
 // spletišča. Brez izjeme bi next-intl /statistika prepisal v /sl/statistika in
-// vrnil 404; /links ima jezike urejene po svoje (glava accept-language in
+// vrnil 404; /links in /anketa imata jezike urejene po svoje (glava accept-language in
 // ?jezik=), ker vsa besedila na njem napiše lastnik, ne prevajalec.
 // Vse o tem je v src/app/(statistika)/ — glej README.md tam.
 export const config = {
-  matcher: "/((?!api|_next|_vercel|q/|statistika|links)[^.]*)",
+  matcher: "/((?!api|_next|_vercel|q/|statistika|links|anketa)[^.]*)",
 };

@@ -96,6 +96,25 @@ const nextConfig: NextConfig = {
         source: "/links",
         headers: [{ key: "X-Robots-Tag", value: "noindex, follow" }],
       },
+
+      /**
+       * ANKETE ZA EKIPO — NIKOLI V ISKALNIK
+       * Interna stran; povezavo dobi ekipa neposredno. Glej (statistika)/_ankete/README.md
+       */
+      {
+        source: "/anketa",
+        headers: [
+          { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive, nosnippet" },
+          { key: "Referrer-Policy", value: "no-referrer" },
+        ],
+      },
+      {
+        source: "/anketa/:path*",
+        headers: [
+          { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive, nosnippet" },
+          { key: "Referrer-Policy", value: "no-referrer" },
+        ],
+      },
       {
         source: "/links/:path*",
         headers: [{ key: "X-Robots-Tag", value: "noindex, follow" }],
