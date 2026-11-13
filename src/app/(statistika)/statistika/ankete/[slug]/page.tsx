@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { LOCALES } from "@/data/site";
 import s from "@/app/(statistika)/_qr/Statistika.module.css";
@@ -10,7 +11,8 @@ import { jePrijavljen } from "@/app/(statistika)/_qr/sesija";
 import Zaglavlje from "@/app/(statistika)/_qr/Zaglavlje";
 import { anketaPoSlugu, svaPitanja } from "@/app/(statistika)/_ankete/registar";
 import { pripraviAnketeTabele } from "@/app/(statistika)/_ankete/shema";
-import type { Pitanje } from "@/app/(statistika)/_ankete/tipovi";
+import ObrisiOdgovor from "@/app/(statistika)/_ankete/ObrisiOdgovor";
+import type { Anketa, Pitanje } from "@/app/(statistika)/_ankete/tipovi";
 import { odgovoriAnkete, type OdgovorRed } from "@/app/(statistika)/_ankete/upiti";
 import r from "@/app/(statistika)/_ankete/Rezultati.module.css";
 
@@ -59,7 +61,7 @@ function Izbor({ p, redovi }: { p: Extract<Pitanje, { vrsta: "izbor" }>; redovi:
   return <Trake redovi={po} />;
 }
 
-function Tekst({ p, redovi }: { p: Extract<Pitanje, { vrsta: "tekst" }>; redovi: OdgovorRed[] }) {
+function Tekst({ p, redovi, slug }: { p: Extract<Pitanje, { vrsta: "tekst" }>; redovi: OdgovorRed[]; slug: string }) {
   const tekstovi = redovi.filter((x) => typeof x.odgovori[p.id] === "string");
   if (!tekstovi.length) return <p className={s.prazno}>Niko još nije napisao odgovor na ovo pitanje.</p>;
   return (
@@ -74,6 +76,9 @@ function Tekst({ p, redovi }: { p: Extract<Pitanje, { vrsta: "tekst" }>; redovi:
             <span className={r.tekstMeta}>
               <span className={r.jezikCip}>{kratkoJezika(x.jezik)}</span>
               {datumFmt.format(x.datum)}
+              <Link href={`/statistika/ankete/${slug}/odgovor/${x.id}`} className={r.otvori}>
+                Cijeli odgovor →
+              </Link>
             </span>
           </li>
         ))}
@@ -103,10 +108,50 @@ function Trake({ redovi }: { redovi: { naziv: string; broj: number }[] }) {
   );
 }
 
+/** Kratek povzetek obrazca za seznam: prvi napisani odgovor, sicer ocene. */
+function isjecak(anketa: Anketa, x: OdgovorRed) {
+  const pitanja = svaPitanja(anketa);
+  const tekst = pitanja.find((p) => p.vrsta === "tekst" && typeof x.odgovori[p.id] === "string");
+  if (tekst) return `„${String(x.odgovori[tekst.id]).slice(0, 140)}“`;
+  const ocjene = pitanja.filter((p) => p.vrsta === "skala" && typeof x.odgovori[p.id] === "number").map((p) => x.odgovori[p.id]);
+  return ocjene.length ? `Ocjene: ${ocjene.join(" · ")} — bez napisanog teksta` : "Bez napisanog teksta";
+}
+
+function Pojedinacni({ anketa, redovi }: { anketa: Anketa; redovi: OdgovorRed[] }) {
+  const lista = `/statistika/ankete/${anketa.slug}?prikaz=pojedinacno`;
+  return (
+    <ul className={r.pojedinacni}>
+      {redovi.map((x, i) => {
+        const redniBroj = redovi.length - i;
+        return (
+          <li key={x.id}>
+            <Link href={`/statistika/ankete/${anketa.slug}/odgovor/${x.id}`} className={r.pojedinacniLink}>
+              <span className={r.pojedinacniNaslov}>
+                Odgovor br. {redniBroj}
+                <span className={r.jezikCip}>{kratkoJezika(x.jezik)}</span>
+                <span className={r.tekstMeta}>{datumFmt.format(x.datum)}</span>
+              </span>
+              <span className={r.pojedinacniIsjecak}>{isjecak(anketa, x)}</span>
+            </Link>
+            <ObrisiOdgovor slug={anketa.slug} id={x.id} redniBroj={redniBroj} nakon={lista} malo />
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
 const VRSTA: Record<Pitanje["vrsta"], string> = { skala: "Ocjena 1–5", izbor: "Jedan izbor", tekst: "Slobodan odgovor" };
 
-export default async function RezultatiAnketePage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
+export default async function RezultatiAnketePage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ prikaz?: string }>;
+}) {
+  const [{ slug }, { prikaz }] = await Promise.all([params, searchParams]);
+  const pojedinacno = prikaz === "pojedinacno";
   if (!(await jePrijavljen())) return <Prijava />;
   if (!imaBazu()) return <NemaBaze />;
 
@@ -148,6 +193,29 @@ export default async function RezultatiAnketePage({ params }: { params: Promise<
           </section>
         ) : (
           <>
+            <nav className={`${s.filteri} ${r.prikazi}`} aria-label="Prikaz">
+              <Link
+                href={`/statistika/ankete/${slug}`}
+                className={`${s.filter} ${!pojedinacno ? s.filterAktivan : ""}`}
+                aria-current={!pojedinacno ? "page" : undefined}
+              >
+                Sažetak
+              </Link>
+              <Link
+                href={`/statistika/ankete/${slug}?prikaz=pojedinacno`}
+                className={`${s.filter} ${pojedinacno ? s.filterAktivan : ""}`}
+                aria-current={pojedinacno ? "page" : undefined}
+              >
+                Pojedinačni odgovori ({broj(redovi.length)})
+              </Link>
+            </nav>
+          </>
+        )}
+
+        {redovi.length > 0 && pojedinacno && <Pojedinacni anketa={anketa} redovi={redovi} />}
+
+        {redovi.length > 0 && !pojedinacno && (
+          <>
             <div className={s.mreza2}>
               <Raspodjela naslov="Jezik ankete" redovi={poJeziku} najvise={6} />
             </div>
@@ -163,7 +231,7 @@ export default async function RezultatiAnketePage({ params }: { params: Promise<
                     <h3 className={r.pitanjeNaslov}>{p.pitanje.bs}</h3>
                     {p.vrsta === "skala" && <Skala p={p} redovi={redovi} />}
                     {p.vrsta === "izbor" && <Izbor p={p} redovi={redovi} />}
-                    {p.vrsta === "tekst" && <Tekst p={p} redovi={redovi} />}
+                    {p.vrsta === "tekst" && <Tekst p={p} redovi={redovi} slug={slug} />}
                   </article>
                 ))}
               </section>

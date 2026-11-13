@@ -3,6 +3,13 @@
 Anonimne ankete za ekipu, na šest jezika. Radnik otvori `seherezada.net/anketa`,
 izabere jezik i popuni. Rezultati su u panelu: **`/statistika/ankete`**.
 
+Rezultati imaju dva taba: **Sažetak** (prosjeci, raspodjele, svi napisani
+tekstovi) i **Pojedinačni odgovori** (svaki popunjen obrazac posebno, sa
+listanjem naprijed/nazad i dugmetom **Obriši** — npr. za probni ili dupli
+odgovor). Brisanje briše jedan red iz `ankete_odgovori` i ništa drugo
+(`panelAkcije.ts`). Redni broj („Odgovor br. 3“) je redoslijed slanja, pa se
+nakon brisanja kasniji odgovori prenumerišu.
+
 ```
 _ankete/
   definicije/          jedna datoteka = jedna anketa (pitanja na 6 jezika)
@@ -12,10 +19,14 @@ _ankete/
   AnketaStranica.tsx   ekran 1: izbor jezika · ekran 2: anketa
   Obrazac.tsx          obrazac u pregledniku
   akcije.ts            slanje — server sve ponovo provjeri (provjera.ts)
+  panelAkcije.ts       brisanje jednog odgovora (samo prijavljen)
+  ObrisiOdgovor.tsx    dugme Obriši s potvrdom
+  prikaz.ts            odgovor kao tekst za panel (ocjena, izbor, tekst)
   shema.ts             tabela ankete_odgovori
   upiti.ts             čitanje za panel
 anketa/                /anketa i /anketa/<slug> (stranica za radnike)
 statistika/ankete/     rezultati u panelu + CSV za Excel
+  [slug]/odgovor/[id]/ jedan popunjen obrazac
 ```
 
 ## Nova anketa

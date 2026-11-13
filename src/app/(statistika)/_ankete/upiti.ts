@@ -36,3 +36,22 @@ export async function odgovoriAnkete(slug: string): Promise<OdgovorRed[]> {
     order by id desc
   `;
 }
+
+/**
+ * En izpolnjen obrazec, z zaporedno številko (1 = prvi poslani) in sosedoma
+ * za listanje naprej in nazaj. null, če ga ni ali pripada drugi anketi.
+ */
+export async function jedanOdgovor(
+  slug: string,
+  id: number
+): Promise<(OdgovorRed & { redniBroj: number; prethodni: number | null; sljedeci: number | null }) | null> {
+  const [red] = await baza()<(OdgovorRed & { redniBroj: number; prethodni: number | null; sljedeci: number | null })[]>`
+    select o.id::int as id, o.verzija, o.jezik, o.datum, o.odgovori,
+      (select count(*)::int from ankete_odgovori where anketa = ${slug} and id <= o.id) as "redniBroj",
+      (select max(id)::int from ankete_odgovori where anketa = ${slug} and id < o.id) as prethodni,
+      (select min(id)::int from ankete_odgovori where anketa = ${slug} and id > o.id) as sljedeci
+    from ankete_odgovori o
+    where o.anketa = ${slug} and o.id = ${id}
+  `;
+  return red ?? null;
+}

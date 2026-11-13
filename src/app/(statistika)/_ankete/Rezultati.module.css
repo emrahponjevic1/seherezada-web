@@ -139,3 +139,109 @@
   border-radius: 6px;
   padding: 0 0.35rem;
 }
+
+/* ---- Pojedinačni odgovori ---- */
+
+.prikazi {
+  margin-bottom: 0.25rem;
+}
+
+.pojedinacni {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.pojedinacni li {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #fff;
+  border: 1px solid #f2ede4;
+  border-radius: 18px;
+  padding: 0.85rem 1rem 0.85rem 1.15rem;
+}
+
+.pojedinacniLink {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.pojedinacniLink:hover .pojedinacniNaslov {
+  color: #ea580c;
+}
+
+.pojedinacniNaslov {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 800;
+  font-size: 0.98rem;
+  transition: color 0.15s;
+}
+
+.pojedinacniIsjecak {
+  font-size: 0.86rem;
+  color: #78716c;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.jedan {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.jedanRed {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding-bottom: 1.1rem;
+  border-bottom: 1px solid #f5f0e8;
+}
+.jedanRed:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.jedanRed dt {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #78716c;
+  line-height: 1.45;
+}
+
+.jedanVrijednost {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.jedanTekst {
+  font-size: 0.98rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: #fffdfa;
+  border: 1px solid #f2ede4;
+  border-radius: 14px;
+  padding: 0.75rem 0.95rem;
+}
+
+.bezOdgovora {
+  font-size: 0.9rem;
+  color: #a8a29e;
+  font-style: italic;
+}
+
+.otvori {
+  margin-left: auto;
+  color: #ea580c;
+}
+.otvori:hover {
+  text-decoration: underline;
+}
